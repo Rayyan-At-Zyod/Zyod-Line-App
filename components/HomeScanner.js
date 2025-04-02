@@ -126,7 +126,8 @@ export default function HomeScanner() {
     <View key={item.id} style={styles.tableRow}>
       <Text style={[styles.cell, { flex: 0.5 }]}>{index + 1}</Text>
       <Text style={[styles.cell, { flex: 1 }]}>{item.size}</Text>
-      <Text style={[styles.cell, { flex: 1.5 }]}>{item.serials.length > 0 ? item.serials.join(', ') : '-'}</Text>
+      {/* <Text style={[styles.cell, { flex: 1.5 }]}>{item.serials.length > 0 ? item.serials.join(', ') : '-'}</Text> */}
+      <Text style={[styles.cell, { flex: 1.5 }]}>1-10</Text>
       <Text style={[styles.cell, { flex: 1 }]}>{item.totalQuantity}</Text>
       <View style={[styles.cell, { flex: 0.5 }]}>
         <IconButton
@@ -213,9 +214,6 @@ const styles = StyleSheet.create({
   scanBox: {
     flex: 0.9,
     height: 40,
-    // borderWidth: 1,
-    // borderColor: "#aaa",
-    // borderRadius: 4,
     justifyContent: "center",
     paddingHorizontal: 8,
   },
@@ -240,7 +238,12 @@ const styles = StyleSheet.create({
   },
   tableContainer: {
     flex: 1,
+    flexGrow: "min-content",
     marginTop: 20,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
   },
   tableHeader: {
     flexDirection: 'row',

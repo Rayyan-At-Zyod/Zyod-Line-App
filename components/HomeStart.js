@@ -1,6 +1,6 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { TextInput, Button, Menu } from "react-native-paper";
+import { TextInput, Button, Menu, ActivityIndicator } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 
 export default function HomeStart() {
@@ -8,11 +8,46 @@ export default function HomeStart() {
   const [noOfOps, setNoOfOps] = useState(0);
   const [visible, setVisible] = useState(false);
   const [selectedLine, setSelectedLine] = useState("Select Line");
+  const [lines, setLines] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchLines();
+  }, []);
+
+  const fetchLines = async () => {
+    try {
+      const response = await fetch('https://dev-api.zyod.com/v1/lines/list/', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch lines');
+      }
+
+      // Sort lines by LineId in ascending order
+      const sortedLines = data.data.rows.sort((a, b) => a.LineId - b.LineId);
+      setLines(sortedLines);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching lines:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
   const selectLine = (line) => {
-    setSelectedLine(line);
+    setSelectedLine(`Line ${line.LineId}`);
     closeMenu();
   };
 
@@ -63,9 +98,21 @@ export default function HomeStart() {
             </Button>
           }
         >
-          <Menu.Item onPress={() => selectLine("Line 1")} title="Line 1" />
-          <Menu.Item onPress={() => selectLine("Line 2")} title="Line 2" />
-          <Menu.Item onPress={() => selectLine("Line 3")} title="Line 3" />
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" />
+            </View>
+          ) : error ? (
+            <Text style={styles.errorText}>{error}</Text>
+          ) : (
+            lines.map((line) => (
+              <Menu.Item
+                key={line.LineId}
+                onPress={() => selectLine(line)}
+                title={`Line ${line.LineId}`}
+              />
+            ))
+          )}
         </Menu>
       </View>
       <View style={styles.inputGroup}>
@@ -82,9 +129,14 @@ export default function HomeStart() {
       <Button
         mode="contained"
         onPress={() =>
-          navigation.navigate("Home Scanner", { line: selectedLine, noOfOps })
+          navigation.navigate("Home Scanner", { 
+            line: selectedLine, 
+            noOfOps,
+            lineId: lines.find(l => `Line ${l.LineId}` === selectedLine)?.LineId 
+          })
         }
         style={styles.button}
+        disabled={selectedLine === "Select Line" || !noOfOps}
       >
         Start Scanning Bundles
       </Button>
@@ -111,5 +163,14 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
+  },
+  loadingContainer: {
+    padding: 10,
+    alignItems: 'center',
+  },
+  errorText: {
+    color: '#FF0000',
+    padding: 10,
+    textAlign: 'center',
   },
 });
