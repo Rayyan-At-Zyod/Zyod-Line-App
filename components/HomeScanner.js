@@ -1,18 +1,25 @@
 import React, { useState, useLayoutEffect } from "react";
-import { View, Text, StyleSheet, FlatList, ScrollView, Animated } from "react-native";
-import { Button, List, TextInput, IconButton, Snackbar } from "react-native-paper";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  Button,
+  List,
+  TextInput,
+  IconButton,
+  Snackbar,
+} from "react-native-paper";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScanner() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { line, noOfOps } = route.params || {};
+  const { line, noOfOps, lineId } = route.params || {};
   const [barcode, setBarcode] = useState("");
   const [scannedItems, setScannedItems] = useState([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarType, setSnackbarType] = useState("success"); // "success" or "error"
+  const [snackbarType, setSnackbarType] = useState("success");
+  const [allocating, setAllocating] = useState(false);
 
   // ----- CUSTOM HEADER -----
   useLayoutEffect(() => {
@@ -84,32 +91,103 @@ export default function HomeScanner() {
       }
 
       // Check if item already exists
-      const isDuplicate = scannedItems.some(item => item.size === data.data.batchDetails.skuCode);
-      
+      const isDuplicate = scannedItems.some(
+        (item) => item.size === data.data.batchDetails.skuCode
+      );
+
       if (isDuplicate) {
-        showSnackbar(`${data.data.batchDetails.skuCode} is already scanned`, "error");
+        showSnackbar(
+          `${data.data.batchDetails.skuCode} is already scanned`,
+          "error"
+        );
         return;
       }
 
-      // Add the scanned item to the list
+      // Add the scanned item to the list with all necessary data
       const newItem = {
         id: Date.now(),
         size: data.data.batchDetails.skuCode,
         serials: data.data.batchDetails.serials,
         totalQuantity: data.data.batchDetails.quantity,
+        barcode: data.data.barcode,
+        sku: data.data.batchDetails.skuCode,
+        brand: data.data.batchDetails.skuType,
+        poSku: data.data.batchDetails.skuCode,
+        allocationTime: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
       };
-      
-      setScannedItems(prevItems => [...prevItems, newItem]);
+
+      setScannedItems((prevItems) => [...prevItems, newItem]);
       setBarcode(""); // Clear the input after successful scan
-      showSnackbar(`${data.data.batchDetails.skuCode} scanned successfully`, "success");
+      showSnackbar(
+        `${data.data.batchDetails.skuCode} scanned successfully`,
+        "success"
+      );
     } catch (error) {
       console.log(`Error: ${error}`);
       throw error;
     }
   };
 
+  const handleAllocateBundles = async () => {
+    if (scannedItems.length === 0) {
+      showSnackbar("No bundles to allocate", "error");
+      return;
+    }
+
+    setAllocating(true);
+    try {
+      const allocationsData = scannedItems.map((item) => ({
+        noOfOperator: parseInt(noOfOps),
+        size: item.size,
+        qty: item.totalQuantity,
+        barcode: item.barcode,
+        brand: item.brand,
+        sku: item.sku,
+        poSku: item.poSku,
+        allocationTime: item.allocationTime,
+      }));
+
+      console.log("allocating data:\n", allocationsData);
+
+      const response = await fetch(
+        "https://dev-api.zyod.com/v1/lines/allocations/",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            lineId: lineId,
+            allocationsData: allocationsData,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log(JSON.stringify(data, null, 2));
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to allocate bundles");
+      }
+
+      showSnackbar(
+        `${scannedItems.length} bundles allocated successfully`,
+        "success"
+      );
+      setScannedItems([]); // Clear the table after successful allocation
+    } catch (error) {
+      console.error("Error allocating bundles:", error);
+      showSnackbar(error.message || "Failed to allocate bundles", "error");
+    } finally {
+      setAllocating(false);
+    }
+  };
+
   const handleDeleteItem = (id) => {
-    setScannedItems(prevItems => prevItems.filter(item => item.id !== id));
+    setScannedItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
   const renderTableHeader = () => (
@@ -126,8 +204,9 @@ export default function HomeScanner() {
     <View key={item.id} style={styles.tableRow}>
       <Text style={[styles.cell, { flex: 0.5 }]}>{index + 1}</Text>
       <Text style={[styles.cell, { flex: 1 }]}>{item.size}</Text>
-      {/* <Text style={[styles.cell, { flex: 1.5 }]}>{item.serials.length > 0 ? item.serials.join(', ') : '-'}</Text> */}
-      <Text style={[styles.cell, { flex: 1.5 }]}>1-10</Text>
+      <Text style={[styles.cell, { flex: 1.5 }]}>
+        {item.serials.length > 0 ? item.serials.join(", ") : "-"}
+      </Text>
       <Text style={[styles.cell, { flex: 1 }]}>{item.totalQuantity}</Text>
       <View style={[styles.cell, { flex: 0.5 }]}>
         <IconButton
@@ -148,12 +227,12 @@ export default function HomeScanner() {
   return (
     <View style={styles.container}>
       <View style={styles.scanInputContainer}>
-        <List.Subheader>Enter bundle code</List.Subheader>
+        <List.Subheader>Scan or enter bundle code</List.Subheader>
         <View style={styles.scanRow}>
           <View style={styles.scanBox}>
             <TextInput
               style={styles.codeText}
-              label="Scan or Enter a Bundle Code"
+              label="Number of Operators"
               mode="outlined"
               keyboardType="number-pad"
               value={barcode}
@@ -171,10 +250,25 @@ export default function HomeScanner() {
       </View>
 
       {/* Table Section */}
-      <ScrollView style={styles.tableContainer}>
+      <View style={styles.tableWrapper}>
         {scannedItems.length > 0 && renderTableHeader()}
-        {scannedItems.map((item, index) => renderTableRow(item, index))}
-      </ScrollView>
+        <ScrollView style={styles.tableContainer}>
+          {scannedItems.map((item, index) => renderTableRow(item, index))}
+        </ScrollView>
+      </View>
+
+      {/* Allocate Button */}
+      {scannedItems.length > 0 && (
+        <Button
+          mode="contained"
+          onPress={handleAllocateBundles}
+          style={styles.allocateButton}
+          loading={allocating}
+          disabled={allocating}
+        >
+          Allocate Bundles
+        </Button>
+      )}
 
       {/* Snackbar for notifications */}
       <Snackbar
@@ -183,13 +277,17 @@ export default function HomeScanner() {
         duration={5000}
         style={[
           styles.snackbar,
-          { backgroundColor: snackbarType === "success" ? "#4CAF50" : "#FF5252" }
+          {
+            backgroundColor: snackbarType === "success" ? "#4CAF50" : "#FF5252",
+          },
         ]}
       >
-        <Text style={[
-          styles.snackbarText,
-          { color: snackbarType === "success" ? "#FFFFFF" : "#FFFFFF" }
-        ]}>
+        <Text
+          style={[
+            styles.snackbarText,
+            { color: snackbarType === "success" ? "#FFFFFF" : "#FFFFFF" },
+          ]}
+        >
           {snackbarMessage}
         </Text>
       </Snackbar>
@@ -224,61 +322,50 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: "#333",
   },
-  bundleList: {
-    flex: 1,
-    marginBottom: 20,
-  },
-  emptyText: {
-    textAlign: "center",
-    color: "gray",
-    marginTop: 20,
-  },
-  allocateButton: {
+  tableWrapper: {
+    flexGrow: 0,
     marginBottom: 20,
   },
   tableContainer: {
-    flex: 1,
-    flexGrow: "min-content",
-    marginTop: 20,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
+    maxHeight: 300, // Adjust this value as needed
   },
   tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
+    flexDirection: "row",
+    backgroundColor: "#f5f5f5",
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: "#ddd",
   },
   headerCell: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 14,
-    color: '#333',
+    color: "#333",
   },
   tableRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    alignItems: 'center',
+    borderBottomColor: "#ddd",
+    alignItems: "center",
   },
   cell: {
     fontSize: 14,
-    color: '#333',
+    color: "#333",
+  },
+  allocateButton: {
+    marginVertical: 20,
   },
   snackbar: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   snackbarText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
