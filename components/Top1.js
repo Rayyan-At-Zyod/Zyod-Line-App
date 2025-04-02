@@ -4,7 +4,7 @@ import React from 'react'
 const Top1 = () => {
   return (
     <View>
-      <Text>Top1</Text>
+      <Text>Rayyan1</Text>
     </View>
   )
 }

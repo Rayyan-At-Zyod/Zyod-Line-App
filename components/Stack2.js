@@ -11,9 +11,9 @@ const Stack2 = () => {
       }}
     >
       <Text>Stack2</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+      {/* <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
         <Text>Go to Profile</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
