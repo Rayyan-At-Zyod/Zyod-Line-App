@@ -91,14 +91,16 @@ export const homeScannerStyles = StyleSheet.create({
     fontWeight: 700,
   },
   newAllocationButton: {
-    width: 250,
+    width: 350,
     backgroundColor: "#fff",
     borderRadius: 10,
     marginVertical: 0,
+    borderWidth: 1,
     borderColor: "#1570EF",
   },
   newAllocationButtonText: {
     color: "#1570EF",
+    fontSize: 14,
   },
   allocateButton: {
     width: 250,
