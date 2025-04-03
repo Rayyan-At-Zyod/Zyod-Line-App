@@ -96,7 +96,8 @@ export default function HomeScanner() {
           brand: item.brand,
           sku: item.sku,
           poSku: item.poSku,
-          allocationTime: item.allocationTime,
+          // allocationTime: item.allocationTime,
+          serials: item.serials.join("-"),
         };
       });
 
@@ -224,7 +225,7 @@ export default function HomeScanner() {
         sku: data.data.batchDetails.skuCode,
         brand: data.data.batchDetails.skuType, // ?
         poSku: data.data.batchDetails.metadata.finishedGoodDetails.code, // ?
-        allocationTime: new Date(),
+        // allocationTime: new Date(),
       };
 
       setScannedItems((prevItems) => [...prevItems, newItem]);

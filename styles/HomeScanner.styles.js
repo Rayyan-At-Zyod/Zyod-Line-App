@@ -70,7 +70,7 @@ export const homeScannerStyles = StyleSheet.create({
     color: "#333",
   },
   buttonView: {
-    backgroundColor: "yellow",
+    // backgroundColor: "yellow",
     padding: 10,
     width: "100%",
     position: "absolute",
