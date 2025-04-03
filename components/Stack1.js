@@ -6,14 +6,17 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import Top1 from "./Top1";
 import Top2 from "./Top2";
 
-const Tab = createMaterialTopTabNavigator();
+// const Tab = createMaterialTopTabNavigator();
 
 function MyTopTabs() {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Rayyan1" component={Top1} />
-      <Tab.Screen name="Rayyan2" component={Top2} />
-    </Tab.Navigator>
+    // <Tab.Navigator>
+    //   <Tab.Screen name="Rayyan1" component={Top1} />
+    //   <Tab.Screen name="Rayyan2" component={Top2} />
+    // </Tab.Navigator>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text>Coming soon...</Text>
+    </View>
   );
 }
 const Stack1 = () => {

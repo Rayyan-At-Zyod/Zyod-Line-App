@@ -34,9 +34,25 @@ function MyTabs() {
       })}
       initialRouteName="Home"
     >
-      <Tab.Screen name="All Lines" component={Stack1} />
+      <Tab.Screen
+        name="All Lines"
+        component={Stack1}
+        options={{
+          tabBarButton: (props) => (
+            <TouchableOpacity {...props} disabled={true} />
+          ),
+        }}
+      />
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Logout" component={Stack2} />
+      <Tab.Screen
+        name="Logout"
+        component={Stack2}
+        options={{
+          tabBarButton: (props) => (
+            <TouchableOpacity {...props} disabled={true} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
