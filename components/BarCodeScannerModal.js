@@ -1,31 +1,86 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
-import { CameraView as Camera } from 'expo-camera';
+import { CameraView, Camera } from 'expo-camera';
 
 export default function BarCodeScannerModal({ visible, onClose, onBarCodeScanned }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log('BarCodeScannerModal mounted, visible:', visible);
     (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
+      try {
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        console.log('Camera permission status:', status);
+        setHasPermission(status === 'granted');
+      } catch (err) {
+        console.error('Error requesting camera permission:', err);
+        setError(err.message);
+      }
     })();
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
+    console.log('Barcode scanned:', { type, data });
     setScanned(true);
     onBarCodeScanned(data);
     onClose();
   };
 
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+  if (error) {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <View style={styles.container}>
+          <Text style={styles.errorText}>Error: {error}</Text>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    );
   }
 
+  if (hasPermission === null) {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <View style={styles.container}>
+          <Text>Requesting camera permission...</Text>
+        </View>
+      </Modal>
+    );
+  }
+  
+  if (hasPermission === false) {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <View style={styles.container}>
+          <Text>No access to camera</Text>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    );
+  }
+
+  console.log('Rendering camera with visible:', visible);
+  
   return (
     <Modal
       animationType="slide"
@@ -34,7 +89,7 @@ export default function BarCodeScannerModal({ visible, onClose, onBarCodeScanned
       onRequestClose={onClose}
     >
       <View style={styles.container}>
-        <Camera
+        <CameraView
           style={styles.camera}
           type="back"
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -48,7 +103,7 @@ export default function BarCodeScannerModal({ visible, onClose, onBarCodeScanned
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
-        </Camera>
+        </CameraView>
       </View>
     </Modal>
   );
@@ -57,9 +112,12 @@ export default function BarCodeScannerModal({ visible, onClose, onBarCodeScanned
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   camera: {
     flex: 1,
+    width: '100%',
   },
   overlay: {
     flex: 1,
@@ -82,5 +140,10 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    marginBottom: 20,
   },
 });

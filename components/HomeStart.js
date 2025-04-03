@@ -18,27 +18,29 @@ export default function HomeStart() {
 
   const fetchLines = async () => {
     try {
-      const response = await fetch('https://dev-api.zyod.com/v1/lines/list/', {
-        method: 'GET',
+      const response = await fetch("https://dev-api.zyod.com/v1/lines/list/", {
+        method: "GET",
         headers: {
-          'Accept': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
+          "Content-Type": "application/json",
         },
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch lines');
+        throw new Error(data.message || "Failed to fetch lines");
       }
 
       // Sort lines by LineId in ascending order
+      console.log("data", data);
       const sortedLines = data.data.rows.sort((a, b) => a.LineId - b.LineId);
       setLines(sortedLines);
+      console.log("sortedLines", sortedLines);
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching lines:', err);
+      console.error("Error fetching lines:", err);
     } finally {
       setLoading(false);
     }
@@ -129,10 +131,11 @@ export default function HomeStart() {
       <Button
         mode="contained"
         onPress={() =>
-          navigation.navigate("Home Scanner", { 
-            line: selectedLine, 
+          navigation.navigate("Home Scanner", {
+            line: selectedLine,
             noOfOps,
-            lineId: lines.find(l => `Line ${l.LineId}` === selectedLine)?.LineId 
+            lineId: lines.find((l) => `Line ${l.LineId}` === selectedLine)
+              ?.LineId,
           })
         }
         style={styles.button}
@@ -166,11 +169,11 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     padding: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   errorText: {
-    color: '#FF0000',
+    color: "#FF0000",
     padding: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
