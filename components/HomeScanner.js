@@ -86,18 +86,24 @@ export default function HomeScanner() {
 
     setAllocating(true);
     try {
-      const allocationsData = scannedItems.map((item) => ({
-        noOfOperator: parseInt(noOfOps),
-        size: item.size,
-        qty: item.totalQuantity,
-        barcode: item.barcode,
-        brand: item.brand,
-        sku: item.sku,
-        poSku: item.poSku,
-        allocationTime: item.allocationTime,
-      }));
+      const allocationsData = scannedItems.map((item) => {
+        console.log(JSON.stringify(item, null, 2));
+        return {
+          noOfOperator: parseInt(noOfOps),
+          size: item.size,
+          qty: item.totalQuantity,
+          barcode: item.barcode,
+          brand: item.brand,
+          sku: item.sku,
+          poSku: item.poSku,
+          allocationTime: item.allocationTime,
+        };
+      });
 
-      console.log("allocating data:\n", allocationsData);
+      console.log(
+        "allocating data:\n",
+        JSON.stringify(allocationsData, null, 2)
+      );
 
       const response = await fetch(
         "https://dev-api.zyod.com/v1/lines/allocations/",
@@ -157,7 +163,7 @@ export default function HomeScanner() {
       <Text style={[homeScannerStyles.cell, { flex: 0.5 }]}>{index + 1}</Text>
       <Text style={[homeScannerStyles.cell, { flex: 1 }]}>{item.size}</Text>
       <Text style={[homeScannerStyles.cell, { flex: 1.5 }]}>
-        {item.serials.length > 0 ? item.serials.join(", ") : "-"}
+        {item.serials.length > 0 ? item.serials.join(", ") : "1 - 10"}
       </Text>
       <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
         {item.totalQuantity}
@@ -210,15 +216,15 @@ export default function HomeScanner() {
 
       // Add the scanned item to the list with all necessary data
       const newItem = {
-        id: Date.now(),
-        size: data.data.batchDetails.skuCode,
+        size: data.data.batchDetails.bundles[0].size,
         serials: data.data.batchDetails.serials,
+        // serials: [1, 10],
         totalQuantity: data.data.batchDetails.quantity,
         barcode: data.data.barcode,
         sku: data.data.batchDetails.skuCode,
-        brand: data.data.batchDetails.skuType,
-        poSku: data.data.batchDetails.skuCode,
-        allocationTime: new Date().toISOString().split("T")[0],
+        brand: data.data.batchDetails.skuType, // ?
+        poSku: data.data.batchDetails.metadata.finishedGoodDetails.code, // ?
+        allocationTime: new Date(),
       };
 
       setScannedItems((prevItems) => [...prevItems, newItem]);
@@ -276,15 +282,26 @@ export default function HomeScanner() {
 
       {/* Allocate Button */}
       {scannedItems.length > 0 && (
-        <Button
-          mode="contained"
-          onPress={handleAllocateBundles}
-          style={homeScannerStyles.allocateButton}
-          loading={allocating}
-          disabled={allocating}
-        >
-          Allocate Bundles
-        </Button>
+        <View style={homeScannerStyles.buttonView}>
+          <Button
+            mode="contained"
+            onPress={() => navigation.navigate("Home Start")}
+            style={homeScannerStyles.cancelButton}
+            loading={allocating}
+            disabled={allocating}
+          >
+            <Text style={homeScannerStyles.cancelButtonText}>Cancel</Text>
+          </Button>
+          <Button
+            mode="contained"
+            onPress={handleAllocateBundles}
+            style={homeScannerStyles.allocateButton}
+            loading={allocating}
+            disabled={allocating}
+          >
+            Allocate Bundles
+          </Button>
+        </View>
       )}
 
       <BarCodeScannerModal

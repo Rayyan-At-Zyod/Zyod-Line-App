@@ -69,8 +69,33 @@ export const homeScannerStyles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
+  buttonView: {
+    backgroundColor: "yellow",
+    padding: 10,
+    width: "100%",
+    position: "absolute",
+    bottom: 5,
+    left: "50%",
+    transform: [{ translateX: "-48%" }],
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 20,
+  },
+  cancelButton: {
+    backgroundColor: "#ddd",
+    borderRadius: 10,
+    width: 100,
+  },
+  cancelButtonText: {
+    color: "black",
+    fontWeight: 700,
+  },
   allocateButton: {
-    marginVertical: 20,
+    width: 250,
+
+    backgroundColor: "#1570EF",
+    borderRadius: 10,
+    marginVertical: 0,
   },
   snackbar: {
     position: "absolute",
