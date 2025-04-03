@@ -30,6 +30,7 @@ export default function HomeScanner() {
   const [snackbarType, setSnackbarType] = useState("success");
   const [allocating, setAllocating] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [allocated, setAllocated] = useState(false);
 
   // ----- CUSTOM HEADER -----
   useLayoutEffect(() => {
@@ -140,6 +141,7 @@ export default function HomeScanner() {
       showSnackbar(error.message || "Failed to allocate bundles", "error");
     } finally {
       setAllocating(false);
+      setAllocated(true);
     }
   };
 
@@ -301,7 +303,7 @@ export default function HomeScanner() {
       </View>
 
       {/* Allocate Button */}
-      {scannedItems.length > 0 && (
+      {scannedItems.length > 0 && !allocated && (
         <View style={homeScannerStyles.buttonView}>
           <Button
             mode="contained"
@@ -320,6 +322,23 @@ export default function HomeScanner() {
             disabled={allocating}
           >
             Allocate Bundles
+          </Button>
+        </View>
+      )}
+
+      {/* Allocate Button */}
+      {scannedItems.length > 0 && allocated && (
+        <View style={homeScannerStyles.buttonView}>
+          <Button
+            mode="contained"
+            onPress={() => navigation.navigate("Home Start")}
+            style={homeScannerStyles.newAllocationButton}
+            loading={allocating}
+            disabled={allocating}
+          >
+            <Text style={homeScannerStyles.newAllocationButtonText}>
+              + New Allocation
+            </Text>
           </Button>
         </View>
       )}
