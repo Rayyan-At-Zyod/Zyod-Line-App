@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { TextInput, Button, Menu, ActivityIndicator } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import homeStartStyles from "../styles/HomeStart.styles";
 
 export default function HomeStart() {
   const navigation = useNavigation();
@@ -88,9 +89,9 @@ export default function HomeStart() {
   }, [navigation, noOfOps]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Choose Line Number</Text>
+    <View style={homeStartStyles.container}>
+      <View style={homeStartStyles.inputGroup}>
+        <Text style={homeStartStyles.label}>Choose Line Number</Text>
         <Menu
           visible={visible}
           onDismiss={closeMenu}
@@ -101,11 +102,11 @@ export default function HomeStart() {
           }
         >
           {loading ? (
-            <View style={styles.loadingContainer}>
+            <View style={homeStartStyles.loadingContainer}>
               <ActivityIndicator size="small" />
             </View>
           ) : error ? (
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={homeStartStyles.errorText}>{error}</Text>
           ) : (
             lines.map((line) => (
               <Menu.Item
@@ -117,10 +118,10 @@ export default function HomeStart() {
           )}
         </Menu>
       </View>
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Enter Number of Operators</Text>
+      <View style={homeStartStyles.inputGroup}>
+        <Text style={homeStartStyles.label}>Enter Number of Operators</Text>
         <TextInput
-          style={styles.textInput}
+          style={homeStartStyles.textInput}
           label="Number of Operators"
           mode="outlined"
           keyboardType="number-pad"
@@ -138,7 +139,7 @@ export default function HomeStart() {
               ?.LineId,
           })
         }
-        style={styles.button}
+        style={homeStartStyles.button}
         disabled={selectedLine === "Select Line" || !noOfOps}
       >
         Start Scanning Bundles
@@ -146,34 +147,3 @@ export default function HomeStart() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    marginBottom: 5,
-    fontSize: 16,
-  },
-  textInput: {
-    backgroundColor: "#fff",
-  },
-  button: {
-    marginTop: 20,
-  },
-  loadingContainer: {
-    padding: 10,
-    alignItems: "center",
-  },
-  errorText: {
-    color: "#FF0000",
-    padding: 10,
-    textAlign: "center",
-  },
-});

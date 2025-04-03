@@ -9,8 +9,8 @@ const Stack = createNativeStackNavigator();
 function Home() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home Scanner" component={HomeScanner} />
       <Stack.Screen name="Home Start" component={HomeStart} />
+      <Stack.Screen name="Home Scanner" component={HomeScanner} />
     </Stack.Navigator>
   );
 }
