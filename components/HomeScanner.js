@@ -17,7 +17,7 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { homeScannerStyles } from "../styles/HomeScanner.styles";
-import BarCodeScannerModal from "./BarCodeSannerModal";
+import BarCodeScannerModal from "./BarCodeScannerModal";
 
 export default function HomeScanner() {
   const route = useRoute();
@@ -250,6 +250,7 @@ export default function HomeScanner() {
 
   return (
     <View style={homeScannerStyles.container}>
+      {/* scan input container */}
       <View style={homeScannerStyles.scanInputContainer}>
         <List.Subheader>Enter bundle code</List.Subheader>
         <View style={homeScannerStyles.scanRow}>

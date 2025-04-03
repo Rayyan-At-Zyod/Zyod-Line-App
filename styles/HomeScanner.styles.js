@@ -99,15 +99,16 @@ export const homeScannerStyles = StyleSheet.create({
   },
   snackbar: {
     position: "absolute",
-    bottom: 0,
+    bottom: 100,
     left: 0,
+    zIndex: 1000,
     right: 0,
-    height: 40,
+    height: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   snackbarText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "500",
   },
 });
