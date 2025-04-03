@@ -284,11 +284,8 @@ export default function HomeScanner() {
               onSubmitEditing={() => handleBarcodeSubmit()}
             />
           </View>
-          <View
-            style={homeScannerStyles.scanCameraBox}
-            onPress={handleScanButtonPress}
-          >
-            <TouchableOpacity>
+          <View style={homeScannerStyles.scanCameraBox}>
+            <TouchableOpacity onPress={handleScanButtonPress}>
               <Ionicons name="camera-outline" size={24} color="#000" />
             </TouchableOpacity>
           </View>
