@@ -99,8 +99,8 @@ export const homeScannerStyles = StyleSheet.create({
   },
   snackbar: {
     position: "absolute",
-    bottom: 100,
-    left: 0,
+    bottom: 720,
+    left: 10,
     zIndex: 1000,
     right: 0,
     height: 20,

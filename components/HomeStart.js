@@ -128,14 +128,17 @@ export default function HomeStart() {
             keyboardType="number-pad"
             value={noOfOps}
             onChangeText={setNoOfOps}
-            onSubmitEditing={() =>
+            onSubmitEditing={() => {
+              if (selectedLine === "Select Line" || !noOfOps) {
+                return;
+              }
               navigation.navigate("Home Scanner", {
                 line: selectedLine,
                 noOfOps,
                 lineId: lines.find((l) => `Line ${l.LineId}` === selectedLine)
                   ?.LineId,
-              })
-            }
+              });
+            }}
           />
         </View>
 
@@ -157,7 +160,15 @@ export default function HomeStart() {
           labelStyle={homeStartStyles.buttonLabel}
           disabled={selectedLine === "Select Line" || !noOfOps}
         >
-          Start Scanning Bundles
+          <Text
+            style={
+              selectedLine === "Select Line" || !noOfOps
+                ? homeStartStyles.disabledButtonText
+                : homeStartStyles.buttonText
+            }
+          >
+            Start Scanning Bundles
+          </Text>
         </Button>
       </View>
     </View>

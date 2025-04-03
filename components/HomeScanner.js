@@ -97,7 +97,7 @@ export default function HomeScanner() {
           sku: item.sku,
           poSku: item.poSku,
           // allocationTime: item.allocationTime,
-          serials: item.serials.join("-"),
+          serials: item.serials.length > 0 ? item.serials.join("-") : "1-10",
         };
       });
 
@@ -204,7 +204,7 @@ export default function HomeScanner() {
 
       // Check if item already exists
       const isDuplicate = scannedItems.some(
-        (item) => item.size === data.data.batchDetails.skuCode
+        (item) => item.id === data.data.barcode
       );
 
       if (isDuplicate) {
@@ -215,15 +215,33 @@ export default function HomeScanner() {
         return;
       }
 
+      let size;
+      if (data.data.barcodeType == "BUNDLE") {
+        size = data?.data?.batchDetails?.bundles?.find(
+          (item) => item.barcode === data.data.barcode
+        )?.size;
+      } else {
+        data?.data?.batchDetails?.bundles?.forEach((bundle) =>
+          bundle.serials?.forEach((item) => {
+            if (item.barcode === data.data.barcode) {
+              size = item.size;
+            }
+          })
+        );
+      }
+
+      console.log(">>---------- size:", size);
+
       // Add the scanned item to the list with all necessary data
       const newItem = {
-        size: data.data.batchDetails.bundles[0].size,
+        id: data.data.barcode,
+        size: size,
         serials: data.data.batchDetails.serials,
         // serials: [1, 10],
-        totalQuantity: data.data.batchDetails.quantity,
+        totalQuantity: data.data.remainingQuantity,
+        brand: data.data.brandName,
         barcode: data.data.barcode,
         sku: data.data.batchDetails.skuCode,
-        brand: data.data.batchDetails.skuType, // ?
         poSku: data.data.batchDetails.metadata.finishedGoodDetails.code, // ?
         // allocationTime: new Date(),
       };
@@ -266,8 +284,11 @@ export default function HomeScanner() {
               onSubmitEditing={() => handleBarcodeSubmit()}
             />
           </View>
-          <View style={homeScannerStyles.scanCameraBox}>
-            <TouchableOpacity onPress={handleScanButtonPress}>
+          <View
+            style={homeScannerStyles.scanCameraBox}
+            onPress={handleScanButtonPress}
+          >
+            <TouchableOpacity>
               <Ionicons name="camera-outline" size={24} color="#000" />
             </TouchableOpacity>
           </View>

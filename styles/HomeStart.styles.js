@@ -52,6 +52,9 @@ export default homeStartStyles = StyleSheet.create({
     color: "#333",
     textTransform: "none", // keep text normal case
   },
+  disabledButtonText: {
+    color: "black",
+  },
   disabledButton: {
     marginTop: 20,
     borderRadius: 8,
@@ -77,5 +80,3 @@ export default homeStartStyles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
-
