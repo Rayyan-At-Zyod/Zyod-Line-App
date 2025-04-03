@@ -1,5 +1,12 @@
 import React, { useState, useLayoutEffect } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import {
   Button,
   List,
@@ -9,6 +16,8 @@ import {
 } from "react-native-paper";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { homeScannerStyles } from "../styles/HomeScanner.styles";
+import BarCodeScannerModal from "./BarCodeSannerModal";
 
 export default function HomeScanner() {
   const route = useRoute();
@@ -20,6 +29,7 @@ export default function HomeScanner() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("success");
   const [allocating, setAllocating] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   // ----- CUSTOM HEADER -----
   useLayoutEffect(() => {
@@ -66,66 +76,6 @@ export default function HomeScanner() {
     setTimeout(() => {
       setSnackbarVisible(false);
     }, 5000);
-  };
-
-  const handleBarcodeSubmit = async () => {
-    console.log("handle barcode submit");
-    try {
-      const apiBarcode = barcode.toString();
-      const response = await fetch(
-        `https://dev-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const data = await response.json();
-      if (!response.ok) {
-        const errorMessage = data.message || "Failed to add raw material";
-        throw new Error(errorMessage);
-      }
-
-      // Check if item already exists
-      const isDuplicate = scannedItems.some(
-        (item) => item.size === data.data.batchDetails.skuCode
-      );
-
-      if (isDuplicate) {
-        showSnackbar(
-          `${data.data.batchDetails.skuCode} is already scanned`,
-          "error"
-        );
-        return;
-      }
-
-      // Add the scanned item to the list with all necessary data
-      const newItem = {
-        id: Date.now(),
-        size: data.data.batchDetails.skuCode,
-        serials: data.data.batchDetails.serials,
-        totalQuantity: data.data.batchDetails.quantity,
-        barcode: data.data.barcode,
-        sku: data.data.batchDetails.skuCode,
-        brand: data.data.batchDetails.skuType,
-        poSku: data.data.batchDetails.skuCode,
-        allocationTime: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
-      };
-
-      setScannedItems((prevItems) => [...prevItems, newItem]);
-      setBarcode(""); // Clear the input after successful scan
-      showSnackbar(
-        `${data.data.batchDetails.skuCode} scanned successfully`,
-        "success"
-      );
-    } catch (error) {
-      console.log(`Error: ${error}`);
-      throw error;
-    }
   };
 
   const handleAllocateBundles = async () => {
@@ -177,7 +127,7 @@ export default function HomeScanner() {
         `${scannedItems.length} bundles allocated successfully`,
         "success"
       );
-      setScannedItems([]); // Clear the table after successful allocation
+      //   setScannedItems([]); // Clear the table after successful allocation
     } catch (error) {
       console.error("Error allocating bundles:", error);
       showSnackbar(error.message || "Failed to allocate bundles", "error");
@@ -191,24 +141,28 @@ export default function HomeScanner() {
   };
 
   const renderTableHeader = () => (
-    <View style={styles.tableHeader}>
-      <Text style={[styles.headerCell, { flex: 0.5 }]}>S.No.</Text>
-      <Text style={[styles.headerCell, { flex: 1 }]}>Size</Text>
-      <Text style={[styles.headerCell, { flex: 1.5 }]}>Serials</Text>
-      <Text style={[styles.headerCell, { flex: 1 }]}>Total Quantity</Text>
-      <Text style={[styles.headerCell, { flex: 0.5 }]}>Action</Text>
+    <View style={homeScannerStyles.tableHeader}>
+      <Text style={[homeScannerStyles.headerCell, { flex: 0.5 }]}>S.No.</Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 1 }]}>Size</Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 1.5 }]}>Serials</Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 1 }]}>
+        Total Quantity
+      </Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 0.5 }]}>Action</Text>
     </View>
   );
 
   const renderTableRow = (item, index) => (
-    <View key={item.id} style={styles.tableRow}>
-      <Text style={[styles.cell, { flex: 0.5 }]}>{index + 1}</Text>
-      <Text style={[styles.cell, { flex: 1 }]}>{item.size}</Text>
-      <Text style={[styles.cell, { flex: 1.5 }]}>
+    <View key={item.id} style={homeScannerStyles.tableRow}>
+      <Text style={[homeScannerStyles.cell, { flex: 0.5 }]}>{index + 1}</Text>
+      <Text style={[homeScannerStyles.cell, { flex: 1 }]}>{item.size}</Text>
+      <Text style={[homeScannerStyles.cell, { flex: 1.5 }]}>
         {item.serials.length > 0 ? item.serials.join(", ") : "-"}
       </Text>
-      <Text style={[styles.cell, { flex: 1 }]}>{item.totalQuantity}</Text>
-      <View style={[styles.cell, { flex: 0.5 }]}>
+      <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
+        {item.totalQuantity}
+      </Text>
+      <View style={[homeScannerStyles.cell, { flex: 0.5 }]}>
         <IconButton
           icon="delete"
           size={20}
@@ -219,40 +173,103 @@ export default function HomeScanner() {
     </View>
   );
 
-  const handleScan = () => {
-    console.log("handle scan");
-    handleBarcodeSubmit();
+  const handleBarcodeSubmit = async (scannedBarcode = null) => {
+    console.log("handle barcode submit");
+    try {
+      const apiBarcode = (scannedBarcode || barcode).toString();
+      const response = await fetch(
+        `https://dev-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        const errorMessage = data.message || "Failed to add raw material";
+        throw new Error(errorMessage);
+      }
+
+      // Check if item already exists
+      const isDuplicate = scannedItems.some(
+        (item) => item.size === data.data.batchDetails.skuCode
+      );
+
+      if (isDuplicate) {
+        showSnackbar(
+          `${data.data.batchDetails.skuCode} is already scanned`,
+          "error"
+        );
+        return;
+      }
+
+      // Add the scanned item to the list with all necessary data
+      const newItem = {
+        id: Date.now(),
+        size: data.data.batchDetails.skuCode,
+        serials: data.data.batchDetails.serials,
+        totalQuantity: data.data.batchDetails.quantity,
+        barcode: data.data.barcode,
+        sku: data.data.batchDetails.skuCode,
+        brand: data.data.batchDetails.skuType,
+        poSku: data.data.batchDetails.skuCode,
+        allocationTime: new Date().toISOString().split("T")[0],
+      };
+
+      setScannedItems((prevItems) => [...prevItems, newItem]);
+      setBarcode(""); // Clear the input after successful scan
+      showSnackbar(
+        `${data.data.batchDetails.skuCode} scanned successfully`,
+        "success"
+      );
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      showSnackbar(error.message || "Failed to scan barcode", "error");
+    }
+  };
+
+  const handleScanButtonPress = () => {
+    console.log("scanner pressed.");
+    setShowScanner(true);
+  };
+
+  const handleBarcodeScanned = (scannedValue) => {
+    handleBarcodeSubmit(scannedValue);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.scanInputContainer}>
-        <List.Subheader>Scan or enter bundle code</List.Subheader>
-        <View style={styles.scanRow}>
-          <View style={styles.scanBox}>
+    <View style={homeScannerStyles.container}>
+      <View style={homeScannerStyles.scanInputContainer}>
+        <List.Subheader>Enter bundle code</List.Subheader>
+        <View style={homeScannerStyles.scanRow}>
+          <View style={homeScannerStyles.scanBox}>
             <TextInput
-              style={styles.codeText}
-              label="Number of Operators"
+              style={homeScannerStyles.codeText}
+              label="Enter bundle code"
               mode="outlined"
               keyboardType="number-pad"
               value={barcode}
               onChangeText={setBarcode}
-              onSubmitEditing={handleBarcodeSubmit}
+              onSubmitEditing={() => handleBarcodeSubmit()}
             />
           </View>
-          <Ionicons
-            name="camera"
-            size={28}
-            style={styles.scanIcon}
-            onPress={handleScan}
-          />
+          <View style={homeScannerStyles.scanCameraBox}>
+            <TouchableOpacity onPress={handleScanButtonPress}>
+              <Ionicons name="camera-outline" size={24} color="#000" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
       {/* Table Section */}
-      <View style={styles.tableWrapper}>
+      <View style={homeScannerStyles.tableWrapper}>
         {scannedItems.length > 0 && renderTableHeader()}
-        <ScrollView style={styles.tableContainer}>
+        <ScrollView style={homeScannerStyles.tableContainer}>
           {scannedItems.map((item, index) => renderTableRow(item, index))}
         </ScrollView>
       </View>
@@ -262,7 +279,7 @@ export default function HomeScanner() {
         <Button
           mode="contained"
           onPress={handleAllocateBundles}
-          style={styles.allocateButton}
+          style={homeScannerStyles.allocateButton}
           loading={allocating}
           disabled={allocating}
         >
@@ -270,13 +287,19 @@ export default function HomeScanner() {
         </Button>
       )}
 
+      <BarCodeScannerModal
+        visible={showScanner}
+        onClose={() => setShowScanner(false)}
+        onBarCodeScanned={handleBarcodeScanned}
+      />
+
       {/* Snackbar for notifications */}
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
         duration={5000}
         style={[
-          styles.snackbar,
+          homeScannerStyles.snackbar,
           {
             backgroundColor: snackbarType === "success" ? "#4CAF50" : "#FF5252",
           },
@@ -284,7 +307,7 @@ export default function HomeScanner() {
       >
         <Text
           style={[
-            styles.snackbarText,
+            homeScannerStyles.snackbarText,
             { color: snackbarType === "success" ? "#FFFFFF" : "#FFFFFF" },
           ]}
         >
@@ -294,78 +317,3 @@ export default function HomeScanner() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 16,
-  },
-  scanInputContainer: {
-    marginTop: 16,
-    marginBottom: 16,
-  },
-  scanRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  scanBox: {
-    flex: 0.9,
-    height: 40,
-    justifyContent: "center",
-    paddingHorizontal: 8,
-  },
-  codeText: {
-    fontSize: 14,
-  },
-  scanIcon: {
-    marginLeft: 10,
-    color: "#333",
-  },
-  tableWrapper: {
-    flexGrow: 0,
-    marginBottom: 20,
-  },
-  tableContainer: {
-    maxHeight: 300, // Adjust this value as needed
-  },
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: "#f5f5f5",
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  headerCell: {
-    fontWeight: "bold",
-    fontSize: 14,
-    color: "#333",
-  },
-  tableRow: {
-    flexDirection: "row",
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-    alignItems: "center",
-  },
-  cell: {
-    fontSize: 14,
-    color: "#333",
-  },
-  allocateButton: {
-    marginVertical: 20,
-  },
-  snackbar: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  snackbarText: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
-});
