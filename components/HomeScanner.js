@@ -162,22 +162,28 @@ export default function HomeScanner() {
   );
 
   const renderTableRow = (item, index) => (
-    <View key={item.id} style={homeScannerStyles.tableRow}>
-      <Text style={[homeScannerStyles.cell, { flex: 0.5 }]}>{index + 1}</Text>
-      <Text style={[homeScannerStyles.cell, { flex: 1 }]}>{item.size}</Text>
-      <Text style={[homeScannerStyles.cell, { flex: 1.5 }]}>
-        {item.serials.length > 0 ? item.serials.join(", ") : "1 - 10"}
-      </Text>
-      <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
-        {item.totalQuantity}
-      </Text>
-      <View style={[homeScannerStyles.cell, { flex: 0.5 }]}>
-        <IconButton
-          icon="delete"
-          size={20}
-          onPress={() => handleDeleteItem(item.id)}
-          iconColor="#FF0000"
-        />
+    <View key={item.id} >
+      <View style={[homeScannerStyles.tableRow, { justifyContent: "space-around" }]}>
+      <Text>{item.poSku}</Text>
+      <Text>{item.brand}</Text>
+      </View>
+      <View style={homeScannerStyles.tableRow}>
+        <Text style={[homeScannerStyles.cell, { flex: 0.5 }]}>{index + 1}</Text>
+        <Text style={[homeScannerStyles.cell, { flex: 1 }]}>{item.size}</Text>
+        <Text style={[homeScannerStyles.cell, { flex: 1.5 }]}>
+          {item.serials.length > 0 ? item.serials.join(", ") : "1 - 10"}
+        </Text>
+        <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
+          {item.totalQuantity}
+        </Text>
+        <View style={[homeScannerStyles.cell, { flex: 0.5 }]}>
+          <IconButton
+            icon="delete"
+            size={20}
+            onPress={() => handleDeleteItem(item.id)}
+            iconColor="#FF0000"
+          />
+        </View>
       </View>
     </View>
   );
