@@ -31,6 +31,7 @@ export default function HomeScanner() {
   const [allocating, setAllocating] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [allocated, setAllocated] = useState(false);
+  const [totalExpectedOutput, setTotalExpectedOutput] = useState(0);
 
   // ----- CUSTOM HEADER -----
   useLayoutEffect(() => {
@@ -79,6 +80,73 @@ export default function HomeScanner() {
     }, 5000);
   };
 
+  const groupedItems = () => {
+    const groups = {};
+    scannedItems.forEach(item => {
+      const key = `${item.brand}_${item.poSku}`;
+      if (!groups[key]) {
+        groups[key] = {
+          brand: item.brand,
+          poSku: item.poSku,
+          items: []
+        };
+      }
+      groups[key].items.push(item);
+    });
+    return Object.values(groups);
+  };
+
+  const renderTableHeader = () => (
+    <View style={homeScannerStyles.tableHeader}>
+      <Text style={[homeScannerStyles.headerCell, { flex: 0.5 }]}>S.No.</Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 1 }]}>Size</Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 1.5 }]}>Serials</Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 1 }]}>Tot. Qty</Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 0.5 }]}>Action</Text>
+    </View>
+  );
+
+  const renderGroupHeader = (brand, poSku) => (
+    <View style={homeScannerStyles.groupHeader}>
+      <Text style={homeScannerStyles.groupHeaderText}>{poSku}</Text>
+      <Text style={homeScannerStyles.groupHeaderSubText}>{brand}</Text>
+    </View>
+  );
+
+  const renderTableRow = (item, index) => (
+    <View key={item.id} style={homeScannerStyles.tableRow}>
+      <Text style={[homeScannerStyles.cell, { flex: 0.5 }]}>{index + 1}</Text>
+      <Text style={[homeScannerStyles.cell, { flex: 1 }]}>{item.size}</Text>
+      <Text style={[homeScannerStyles.cell, { flex: 1.5 }]}>
+        {item.serials.length > 0 ? item.serials.join(", ") : "1 - 10"}
+      </Text>
+      <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
+        {item.totalQuantity}
+      </Text>
+      <View style={[homeScannerStyles.cell, { flex: 0.5 }]}>
+        <IconButton
+          icon="delete"
+          size={20}
+          onPress={() => handleDeleteItem(item.id)}
+          iconColor="#FF0000"
+        />
+      </View>
+    </View>
+  );
+
+  const renderPostAllocationHeader = () => (
+    <View style={homeScannerStyles.postAllocationHeader}>
+      <View style={homeScannerStyles.postAllocationSection}>
+        <Text style={homeScannerStyles.postAllocationLabel}>Bundles scanned</Text>
+        <Text style={homeScannerStyles.postAllocationValue}>{scannedItems.length}</Text>
+      </View>
+      <View style={homeScannerStyles.postAllocationSection}>
+        <Text style={homeScannerStyles.postAllocationLabel}>Total expected output</Text>
+        <Text style={homeScannerStyles.postAllocationValue}>{totalExpectedOutput} NOP</Text>
+      </View>
+    </View>
+  );
+
   const handleAllocateBundles = async () => {
     if (scannedItems.length === 0) {
       showSnackbar("No bundles to allocate", "error");
@@ -87,25 +155,20 @@ export default function HomeScanner() {
 
     setAllocating(true);
     try {
-      const allocationsData = scannedItems.map((item) => {
-        console.log(JSON.stringify(item, null, 2));
-        return {
-          noOfOperator: parseInt(noOfOps),
-          size: item.size,
-          qty: item.totalQuantity,
-          barcode: item.barcode,
-          brand: item.brand,
-          sku: item.sku,
-          poSku: item.poSku,
-          // allocationTime: item.allocationTime,
-          serials: item.serials.length > 0 ? item.serials.join("-") : "1-10",
-        };
-      });
+      const allocationsData = scannedItems.map((item) => ({
+        noOfOperator: parseInt(noOfOps),
+        size: item.size,
+        qty: item.totalQuantity,
+        barcode: item.barcode,
+        brand: item.brand,
+        sku: item.sku,
+        poSku: item.poSku,
+        serials: item.serials.length > 0 ? item.serials.join("-") : "1-10",
+      }));
 
-      console.log(
-        "allocating data:\n",
-        JSON.stringify(allocationsData, null, 2)
-      );
+      // Calculate total expected output
+      const total = scannedItems.reduce((sum, item) => sum + item.totalQuantity, 0);
+      setTotalExpectedOutput(total);
 
       const response = await fetch(
         "https://dev-api.zyod.com/v1/lines/allocations/",
@@ -125,8 +188,6 @@ export default function HomeScanner() {
 
       const data = await response.json();
 
-      console.log(JSON.stringify(data, null, 2));
-
       if (!response.ok) {
         throw new Error(data.message || "Failed to allocate bundles");
       }
@@ -135,7 +196,6 @@ export default function HomeScanner() {
         `${scannedItems.length} bundles allocated successfully`,
         "success"
       );
-      //   setScannedItems([]); // Clear the table after successful allocation
     } catch (error) {
       console.error("Error allocating bundles:", error);
       showSnackbar(error.message || "Failed to allocate bundles", "error");
@@ -148,45 +208,6 @@ export default function HomeScanner() {
   const handleDeleteItem = (id) => {
     setScannedItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
-
-  const renderTableHeader = () => (
-    <View style={homeScannerStyles.tableHeader}>
-      <Text style={[homeScannerStyles.headerCell, { flex: 0.5 }]}>S.No.</Text>
-      <Text style={[homeScannerStyles.headerCell, { flex: 1 }]}>Size</Text>
-      <Text style={[homeScannerStyles.headerCell, { flex: 1.5 }]}>Serials</Text>
-      <Text style={[homeScannerStyles.headerCell, { flex: 1 }]}>
-        Total Quantity
-      </Text>
-      <Text style={[homeScannerStyles.headerCell, { flex: 0.5 }]}>Action</Text>
-    </View>
-  );
-
-  const renderTableRow = (item, index) => (
-    <View key={item.id} >
-      <View style={[homeScannerStyles.tableRow, { justifyContent: "space-around" }]}>
-      <Text>{item.poSku}</Text>
-      <Text>{item.brand}</Text>
-      </View>
-      <View style={homeScannerStyles.tableRow}>
-        <Text style={[homeScannerStyles.cell, { flex: 0.5 }]}>{index + 1}</Text>
-        <Text style={[homeScannerStyles.cell, { flex: 1 }]}>{item.size}</Text>
-        <Text style={[homeScannerStyles.cell, { flex: 1.5 }]}>
-          {item.serials.length > 0 ? item.serials.join(", ") : "1 - 10"}
-        </Text>
-        <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
-          {item.totalQuantity}
-        </Text>
-        <View style={[homeScannerStyles.cell, { flex: 0.5 }]}>
-          <IconButton
-            icon="delete"
-            size={20}
-            onPress={() => handleDeleteItem(item.id)}
-            iconColor="#FF0000"
-          />
-        </View>
-      </View>
-    </View>
-  );
 
   const handleBarcodeSubmit = async (scannedBarcode = null) => {
     console.log("handle barcode submit");
@@ -277,35 +298,45 @@ export default function HomeScanner() {
 
   return (
     <View style={homeScannerStyles.container}>
-      {/* scan input container */}
-      <View style={homeScannerStyles.scanInputContainer}>
-        <List.Subheader>Enter bundle code</List.Subheader>
-        <View style={homeScannerStyles.scanRow}>
-          <View style={homeScannerStyles.scanBox}>
-            <TextInput
-              style={homeScannerStyles.codeText}
-              label="Enter bundle code"
-              mode="outlined"
-              keyboardType="number-pad"
-              value={barcode}
-              onChangeText={setBarcode}
-              onSubmitEditing={() => handleBarcodeSubmit()}
-            />
+      {/* Show scan input container only before allocation */}
+      {!allocated && (
+        <View style={homeScannerStyles.scanInputContainer}>
+          <List.Subheader>Enter bundle code</List.Subheader>
+          <View style={homeScannerStyles.scanRow}>
+            <View style={homeScannerStyles.scanBox}>
+              <TextInput
+                style={homeScannerStyles.codeText}
+                label="Enter bundle code"
+                mode="outlined"
+                keyboardType="number-pad"
+                value={barcode}
+                onChangeText={setBarcode}
+                onSubmitEditing={() => handleBarcodeSubmit()}
+              />
+            </View>
+            <TouchableOpacity
+              style={homeScannerStyles.scanCameraBox}
+              onPress={handleScanButtonPress}
+            >
+              <Ionicons name="camera-outline" size={24} color="#000" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={homeScannerStyles.scanCameraBox}
-            onPress={handleScanButtonPress}
-          >
-            <Ionicons name="camera-outline" size={24} color="#000" />
-          </TouchableOpacity>
         </View>
-      </View>
+      )}
+
+      {/* Show post-allocation header after allocation */}
+      {allocated && renderPostAllocationHeader()}
 
       {/* Table Section */}
       <View style={homeScannerStyles.tableWrapper}>
-        {scannedItems.length > 0 && renderTableHeader()}
         <ScrollView style={homeScannerStyles.tableContainer}>
-          {scannedItems.map((item, index) => renderTableRow(item, index))}
+          {groupedItems().map((group, groupIndex) => (
+            <View key={groupIndex} style={homeScannerStyles.groupContainer}>
+              {renderGroupHeader(group.brand, group.poSku)}
+              {renderTableHeader()}
+              {group.items.map((item, index) => renderTableRow(item, index))}
+            </View>
+          ))}
         </ScrollView>
       </View>
 
