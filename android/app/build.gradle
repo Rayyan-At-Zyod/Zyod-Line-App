@@ -86,7 +86,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.rayyan_zyod.zyodlineapp'
+    namespace 'com.zyod.factory'
     defaultConfig {
         applicationId 'com.rayyan_zyod.zyodlineapp'
         minSdkVersion rootProject.ext.minSdkVersion
