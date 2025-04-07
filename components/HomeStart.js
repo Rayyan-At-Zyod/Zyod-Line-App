@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useEffect } from "react";
+import React, { useLayoutEffect, useState, useEffect, useRef } from "react";
 import { View, Text } from "react-native";
 import { TextInput, Button, Menu, ActivityIndicator } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
@@ -11,6 +11,7 @@ export default function HomeStart() {
   const [selectedLine, setSelectedLine] = useState("Select Line");
   const [lines, setLines] = useState([]);
   const [loading, setLoading] = useState(true);
+  const noOfOpsRef = useRef(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -50,6 +51,9 @@ export default function HomeStart() {
   const selectLine = (line) => {
     setSelectedLine(`Line ${line.LineId}`);
     closeMenu();
+    setTimeout(() => {
+      noOfOpsRef.current?.focus();
+    }, 100); // Slight delay to ensure UI is ready
   };
 
   // ----- CUSTOM HEADER (no changes here) -----
@@ -122,6 +126,7 @@ export default function HomeStart() {
         <View style={homeStartStyles.inputGroup}>
           <Text style={homeStartStyles.label}>Enter No. of Operators</Text>
           <TextInput
+            ref={noOfOpsRef}
             style={homeStartStyles.textInput}
             label="Number of Operators"
             mode="outlined"
