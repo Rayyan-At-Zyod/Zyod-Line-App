@@ -28,6 +28,8 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="com.zyod.factory"/>
         <data android:scheme="exp+zyod-factory"/>
+        <data android:scheme="com.zyod.factory"/>
+        <data android:scheme="exp+zyod-factory-app"/>
       </intent-filter>
     </activity>
   </application>

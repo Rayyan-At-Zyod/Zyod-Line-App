@@ -21,7 +21,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.rayyan_zyod.zyodlineapp"
+      "package": "com.zyod.factory"
     },
     "web": {
       "favicon": "./assets/favicon.png"

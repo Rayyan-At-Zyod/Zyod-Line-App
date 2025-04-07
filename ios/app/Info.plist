@@ -27,13 +27,13 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.rayyan-zyod.zyodlineapp</string>
+          <string>com.zyod.factory</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>exp+zyod-line-app</string>
+          <string>exp+zyod-factory-app</string>
         </array>
       </dict>
     </array>
