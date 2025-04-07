@@ -82,13 +82,13 @@ export default function HomeScanner() {
 
   const groupedItems = () => {
     const groups = {};
-    scannedItems.forEach(item => {
+    scannedItems.forEach((item) => {
       const key = `${item.brand}_${item.poSku}`;
       if (!groups[key]) {
         groups[key] = {
           brand: item.brand,
           poSku: item.poSku,
-          items: []
+          items: [],
         };
       }
       groups[key].items.push(item);
@@ -111,7 +111,7 @@ export default function HomeScanner() {
       <View style={homeScannerStyles.groupHeaderLeft}>
         <Text style={homeScannerStyles.groupHeaderText}>{poSku}</Text>
       </View>
-        <Text style={homeScannerStyles.groupHeaderSubText}>{brand}</Text>
+      <Text style={homeScannerStyles.groupHeaderSubText}>{brand}</Text>
     </View>
   );
 
@@ -139,12 +139,20 @@ export default function HomeScanner() {
   const renderPostAllocationHeader = () => (
     <View style={homeScannerStyles.postAllocationHeader}>
       <View style={homeScannerStyles.postAllocationSection}>
-        <Text style={homeScannerStyles.postAllocationLabel}>Bundles scanned</Text>
-        <Text style={homeScannerStyles.postAllocationValue}>{scannedItems.length}</Text>
+        <Text style={homeScannerStyles.postAllocationLabel}>
+          Bundles scanned
+        </Text>
+        <Text style={homeScannerStyles.postAllocationValue}>
+          {scannedItems.length}
+        </Text>
       </View>
       <View style={homeScannerStyles.postAllocationSection}>
-        <Text style={homeScannerStyles.postAllocationLabel}>Total expected output</Text>
-        <Text style={homeScannerStyles.postAllocationValue}>{totalExpectedOutput} NOP</Text>
+        <Text style={homeScannerStyles.postAllocationLabel}>
+          Total expected output
+        </Text>
+        <Text style={homeScannerStyles.postAllocationValue}>
+          {totalExpectedOutput} NOP
+        </Text>
       </View>
     </View>
   );
@@ -169,7 +177,10 @@ export default function HomeScanner() {
       }));
 
       // Calculate total expected output
-      const total = scannedItems.reduce((sum, item) => sum + item.totalQuantity, 0);
+      const total = scannedItems.reduce(
+        (sum, item) => sum + item.totalQuantity,
+        0
+      );
       setTotalExpectedOutput(total);
 
       const response = await fetch(
@@ -371,7 +382,13 @@ export default function HomeScanner() {
         <View style={homeScannerStyles.buttonView}>
           <Button
             mode="contained"
-            onPress={() => navigation.navigate("Home Start")}
+            // onPress={() => navigation.navigate("Home Start")}
+            onPress={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "Home Start" }],
+              })
+            }
             style={homeScannerStyles.newAllocationButton}
             loading={allocating}
             disabled={allocating}
