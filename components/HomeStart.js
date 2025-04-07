@@ -48,6 +48,7 @@ export default function HomeStart() {
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
+  
   const selectLine = (line) => {
     setSelectedLine(`Line ${line.LineId}`);
     closeMenu();

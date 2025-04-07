@@ -27,15 +27,35 @@ function MyTabs() {
             let iconName;
 
             if (route.name === "Home") {
-              iconName = focused ? "home" : "home-outline";
+              iconName = "home";
             } else if (route.name === "All Lines") {
-              iconName = focused ? "library" : "library-outline";
+              iconName = "library";
             } else {
-              iconName = focused ? "log-out" : "log-out-outline";
+              iconName = "log-out";
             }
 
-            return <Ionicons name={iconName} size={size} color={color} />;
-            // return <Ionicons name="library" size={size} color={color} />;
+            return (
+              <View
+                style={{
+                  backgroundColor: focused ? "#f2f2f2" : "transparent",
+                  borderRadius: 16,
+                  // padding: 10,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Ionicons name={iconName} size={24} color={color} />
+              </View>
+            );
+          },
+          tabBarStyle: {
+            height: 60,
+            paddingBottom: 5,
+            paddingTop: 5,
+          },
+          tabBarLabelStyle: {
+            fontSize: 14, // bigger text
+            fontWeight: "600",
           },
           tabBarActiveTintColor: "black",
           tabBarInactiveTintColor: "gray",
@@ -67,7 +87,6 @@ function MyTabs() {
   } else {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-
         <Stack.Screen
           name="SignIn"
           component={SignInScreen}

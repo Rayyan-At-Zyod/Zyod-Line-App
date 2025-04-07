@@ -18,6 +18,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { homeScannerStyles } from "../styles/HomeScanner.styles";
 import BarCodeScannerModal from "./BarCodeScannerModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScanner() {
   const route = useRoute();
@@ -32,6 +33,8 @@ export default function HomeScanner() {
   const [showScanner, setShowScanner] = useState(false);
   const [allocated, setAllocated] = useState(false);
   const [totalExpectedOutput, setTotalExpectedOutput] = useState(0);
+  const username = AsyncStorage.getItem("userData");
+  console.log("user:", username);
 
   // ----- CUSTOM HEADER -----
   useLayoutEffect(() => {
@@ -83,11 +86,11 @@ export default function HomeScanner() {
   const groupedItems = () => {
     const groups = {};
     scannedItems.forEach((item) => {
-      const key = `${item.brand}_${item.poSku}`;
+      const key = `${item?.brand}_${item?.poSku}`;
       if (!groups[key]) {
         groups[key] = {
-          brand: item.brand,
-          poSku: item.poSku,
+          brand: item?.brand,
+          poSku: item?.poSku,
           items: [],
         };
       }
@@ -120,16 +123,18 @@ export default function HomeScanner() {
       <Text style={[homeScannerStyles.cell, { flex: 0.5 }]}>{index + 1}</Text>
       <Text style={[homeScannerStyles.cell, { flex: 1 }]}>{item.size}</Text>
       <Text style={[homeScannerStyles.cell, { flex: 1.5 }]}>
-        {item.serials.length > 0 ? item.serials.join(", ") : "1 - 10"}
+        {item?.serials?.length > 0
+          ? item?.serials?.join(", ")
+          : `1 - ${item?.totalQuantity}`}
       </Text>
       <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
-        {item.totalQuantity}
+        {item?.totalQuantity}
       </Text>
       <View style={[homeScannerStyles.cell, { flex: 0.5 }]}>
         <IconButton
           icon="delete"
           size={20}
-          onPress={() => handleDeleteItem(item.id)}
+          onPress={() => handleDeleteItem(item?.id)}
           iconColor="#FF0000"
         />
       </View>
@@ -143,7 +148,7 @@ export default function HomeScanner() {
           Bundles scanned
         </Text>
         <Text style={homeScannerStyles.postAllocationValue}>
-          {scannedItems.length}
+          {scannedItems?.length}
         </Text>
       </View>
       <View style={homeScannerStyles.postAllocationSection}>
@@ -158,7 +163,7 @@ export default function HomeScanner() {
   );
 
   const handleAllocateBundles = async () => {
-    if (scannedItems.length === 0) {
+    if (scannedItems?.length === 0) {
       showSnackbar("No bundles to allocate", "error");
       return;
     }
@@ -167,13 +172,14 @@ export default function HomeScanner() {
     try {
       const allocationsData = scannedItems.map((item) => ({
         noOfOperator: parseInt(noOfOps),
-        size: item.size,
-        qty: item.totalQuantity,
-        barcode: item.barcode,
-        brand: item.brand,
-        sku: item.sku,
-        poSku: item.poSku,
-        serials: item.serials.length > 0 ? item.serials.join("-") : "1-10",
+        size: item?.size,
+        qty: item?.totalQuantity,
+        barcode: item?.barcode,
+        brand: item?.brand,
+        sku: item?.sku,
+        poSku: item?.poSku,
+        serials:
+          item?.serials?.length > 0 ? item?.totalQuantity?.join("-") : "1-10",
       }));
 
       // Calculate total expected output
@@ -244,6 +250,8 @@ export default function HomeScanner() {
         throw new Error(errorMessage);
       }
 
+      console.log("response\n", JSON.stringify(data,null,2));
+
       // Check if item already exists
       const isDuplicate = scannedItems.some(
         (item) => item.id === data.data.barcode
@@ -251,7 +259,7 @@ export default function HomeScanner() {
 
       if (isDuplicate) {
         showSnackbar(
-          `${data.data.batchDetails.skuCode} is already scanned`,
+          `${data?.data?.batchDetails?.skuCode} is already scanned`,
           "error"
         );
         return;
@@ -260,13 +268,13 @@ export default function HomeScanner() {
       let size;
       if (data.data.barcodeType == "BUNDLE") {
         size = data?.data?.batchDetails?.bundles?.find(
-          (item) => item.barcode === data.data.barcode
+          (item) => item?.barcode === data?.data?.barcode
         )?.size;
       } else {
         data?.data?.batchDetails?.bundles?.forEach((bundle) =>
           bundle.serials?.forEach((item) => {
-            if (item.barcode === data.data.barcode) {
-              size = item.size;
+            if (item?.barcode === data?.data?.barcode) {
+              size = item?.size;
             }
           })
         );
@@ -276,16 +284,14 @@ export default function HomeScanner() {
 
       // Add the scanned item to the list with all necessary data
       const newItem = {
-        id: data.data.barcode,
+        id: data?.data?.barcode,
         size: size,
-        serials: data.data.batchDetails.serials,
-        // serials: [1, 10],
-        totalQuantity: data.data.remainingQuantity,
-        brand: data.data.brandName,
-        barcode: data.data.barcode,
-        sku: data.data.batchDetails.skuCode,
-        poSku: data.data.batchDetails.metadata.finishedGoodDetails.code, // ?
-        // allocationTime: new Date(),
+        serials: data?.data?.batchDetails?.serials,
+        totalQuantity: data?.data?.remainingQuantity,
+        brand: data?.data?.brandName,
+        barcode: data?.data?.barcode,
+        sku: data?.data?.batchDetails?.skuCode,
+        poSku: data?.data?.batchDetails?.metadata?.finishedGoodDetails?.code, // ?
       };
 
       setScannedItems((prevItems) => [...prevItems, newItem]);
@@ -314,7 +320,7 @@ export default function HomeScanner() {
       {/* Show scan input container only before allocation */}
       {!allocated && (
         <View style={homeScannerStyles.scanInputContainer}>
-          <List.Subheader>Enter bundle code</List.Subheader>
+          {/* <List.Subheader>Enter bundle code</List.Subheader> */}
           <View style={homeScannerStyles.scanRow}>
             <View style={homeScannerStyles.scanBox}>
               <TextInput

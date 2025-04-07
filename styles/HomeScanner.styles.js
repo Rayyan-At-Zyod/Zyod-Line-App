@@ -6,7 +6,7 @@ export const homeScannerStyles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   scanInputContainer: {
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
@@ -15,9 +15,9 @@ export const homeScannerStyles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 15,
     height: 64,
-    paddingHorizontal: 12,
+    paddingHorizontal: 18,
     borderRadius: 8,
   },
   scanCameraBox: {
@@ -30,6 +30,7 @@ export const homeScannerStyles = StyleSheet.create({
   scanBox: {
     flex: 1,
     height: 40,
+    transform: "translateY(-5px)"
   },
   codeText: {
     fontSize: 14,
