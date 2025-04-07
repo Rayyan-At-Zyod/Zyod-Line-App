@@ -16,9 +16,6 @@ const Stack = createNativeStackNavigator();
 
 function MyTabs() {
   const { token } = useAuth();
-
-  console.log("token", token);
-
   if (token) {
     return (
       <Tab.Navigator

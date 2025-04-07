@@ -25,12 +25,8 @@ const SignInScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
-    console.log("=== Sign In Attempt ===");
-    console.log("Username:", username);
-    console.log("Password:", password);
 
     if (!username || !password) {
-      console.log("Validation failed: Missing credentials");
       setError("Please fill in all fields");
       return;
     }
@@ -39,10 +35,6 @@ const SignInScreen = () => {
     setError("");
 
     try {
-      console.log(
-        "Making API request to:",
-        "https://dev-api.zyod.com/v1/users/login"
-      );
       const response = await fetch("https://dev-api.zyod.com/v1/users/login", {
         method: "POST",
         headers: {
@@ -54,19 +46,15 @@ const SignInScreen = () => {
           PortalId: 3,
         }),
       });
-      console.log("Response status:", response.status);
       const data = await response.json();
-      console.log("Response data:", data);
 
       if (!response.ok || !data.success) {
-        console.log("API request failed:", data);
         throw new Error(data.message || "Sign in failed");
       }
 
       if (!data.data?.token || !data.data?.user) {
         throw new Error("Invalid response format");
       }
-console.log("ok.....")
       await signIn(data.data.token, data.data.user);
     } catch (err) {
       console.error("Detailed error:", err);

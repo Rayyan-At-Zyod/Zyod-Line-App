@@ -34,7 +34,6 @@ export default function HomeScanner() {
   const [allocated, setAllocated] = useState(false);
   const [totalExpectedOutput, setTotalExpectedOutput] = useState(0);
   const username = AsyncStorage.getItem("userData");
-  console.log("user:", username);
 
   // ----- CUSTOM HEADER -----
   useLayoutEffect(() => {
@@ -118,28 +117,58 @@ export default function HomeScanner() {
     </View>
   );
 
-  const renderTableRow = (item, index) => (
-    <View key={item.id} style={homeScannerStyles.tableRow}>
-      <Text style={[homeScannerStyles.cell, { flex: 0.5 }]}>{index + 1}</Text>
-      <Text style={[homeScannerStyles.cell, { flex: 1 }]}>{item.size}</Text>
-      <Text style={[homeScannerStyles.cell, { flex: 1.5 }]}>
-        {item?.serials?.length > 0
-          ? item?.serials?.join(", ")
-          : `1 - ${item?.totalQuantity}`}
-      </Text>
-      <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
-        {item?.totalQuantity}
-      </Text>
-      <View style={[{ flex: 0.5, alignItems: "center" }]}>
-        <IconButton
-          icon="delete"
-          size={20}
-          onPress={() => handleDeleteItem(item?.id)}
-          iconColor="#FF0000"
-        />
+  const renderTableRow = (item, index) => {
+    let serialsToDisplay = "";
+
+    if (item.serials?.length > 0) {
+      // Case 1: Direct serials present
+      serialsToDisplay = item.serials.join(", ");
+    } else if (item.bundles?.length > 0) {
+      // Case 2: Find serials from bundle that matches scanned barcode
+      const bundle = item.bundles.find((b) => b.barcode === item.barcode);
+      if (bundle?.serials?.length > 0) {
+        const serialNumbers = bundle.serials
+          .map((s) => {
+            const match = s.serialId?.match(/_(\d+)$/);
+            return match ? parseInt(match[1], 10) : null;
+          })
+          .filter(Boolean);
+
+        if (serialNumbers.length > 0) {
+          const minSerial = Math.min(...serialNumbers);
+          const maxSerial = Math.max(...serialNumbers);
+          serialsToDisplay = `${minSerial}-${maxSerial}`;
+        } else {
+          serialsToDisplay = `1 - ${item.totalQuantity}`;
+        }
+      } else {
+        serialsToDisplay = `1 - ${item.totalQuantity}`;
+      }
+    } else {
+      serialsToDisplay = `1 - ${item.totalQuantity}`;
+    }
+
+    return (
+      <View key={item.id} style={homeScannerStyles.tableRow}>
+        <Text style={[homeScannerStyles.cell, { flex: 0.5 }]}>{index + 1}</Text>
+        <Text style={[homeScannerStyles.cell, { flex: 1 }]}>{item.size}</Text>
+        <Text style={[homeScannerStyles.cell, { flex: 1.5 }]}>
+          {serialsToDisplay}
+        </Text>
+        <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
+          {item.totalQuantity}
+        </Text>
+        <View style={[{ flex: 0.5, alignItems: "center" }]}>
+          <IconButton
+            icon="delete"
+            size={20}
+            onPress={() => handleDeleteItem(item?.id)}
+            iconColor="#FF0000"
+          />
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const renderPostAllocationHeader = () => (
     <View style={homeScannerStyles.postAllocationHeader}>
@@ -170,19 +199,52 @@ export default function HomeScanner() {
 
     setAllocating(true);
     try {
-      const allocationsData = scannedItems.map((item) => ({
-        noOfOperator: parseInt(noOfOps),
-        size: item?.size,
-        qty: item?.totalQuantity,
-        barcode: item?.barcode,
-        brand: item?.brand,
-        sku: item?.sku,
-        poSku: item?.poSku,
-        serials:
-          item?.serials?.length > 0 ? item?.totalQuantity?.join("-") : "1-10",
-      }));
+      const allocationsData = scannedItems.map((item) => {
+        let serials = "";
 
-      // Calculate total expected output
+        if (item.serials?.length > 0) {
+          serials = item.serials.join(", ");
+        } else if (item.bundles?.length > 0) {
+          const bundle = item.bundles.find((b) => b.barcode === item.barcode);
+          if (bundle?.serials?.length > 0) {
+            const serialNumbers = bundle.serials
+              .map((s) => {
+                const match = s.serialId?.match(/_(\d+)$/);
+                return match ? parseInt(match[1], 10) : null;
+              })
+              .filter(Boolean);
+
+            if (serialNumbers.length > 0) {
+              const minSerial = Math.min(...serialNumbers);
+              const maxSerial = Math.max(...serialNumbers);
+              serials = `${minSerial}-${maxSerial}`;
+            } else {
+              serials = `1 - ${item.totalQuantity}`;
+            }
+          } else {
+            serials = `1 - ${item.totalQuantity}`;
+          }
+        } else {
+          serials = `1 - ${item.totalQuantity}`;
+        }
+
+        return {
+          noOfOperator: parseInt(noOfOps),
+          size: item?.size,
+          qty: item?.totalQuantity,
+          barcode: item?.barcode,
+          brand: item?.brand,
+          sku: item?.sku,
+          poSku: item?.poSku,
+          serials: serials,
+        };
+      });
+
+      console.log(
+        "Hello rayyan! Hitting allocation API:\n",
+        JSON.stringify(allocationsData, null, 2)
+      );
+
       const total = scannedItems.reduce(
         (sum, item) => sum + item.totalQuantity,
         0
@@ -195,7 +257,7 @@ export default function HomeScanner() {
           method: "POST",
           headers: {
             Accept: "application/json",
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
+            Authorization: `Bearer <token>`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -229,7 +291,6 @@ export default function HomeScanner() {
   };
 
   const handleBarcodeSubmit = async (scannedBarcode = null) => {
-    console.log("handle barcode submit");
     try {
       const apiBarcode = (scannedBarcode || barcode).toString();
       const response = await fetch(
@@ -249,8 +310,6 @@ export default function HomeScanner() {
         const errorMessage = data.message || "Failed to add raw material";
         throw new Error(errorMessage);
       }
-
-      console.log("response\n", JSON.stringify(data, null, 2));
 
       // Check if item already exists
       const isDuplicate = scannedItems.some(
@@ -272,15 +331,13 @@ export default function HomeScanner() {
         )?.size;
       } else {
         data?.data?.batchDetails?.bundles?.forEach((bundle) =>
-          bundle.serials?.forEach((item) => {
+          bundle?.serials?.forEach((item) => {
             if (item?.barcode === data?.data?.barcode) {
               size = item?.size;
             }
           })
         );
       }
-
-      console.log(">>---------- size:", size);
 
       // Add the scanned item to the list with all necessary data
       const newItem = {
@@ -291,7 +348,8 @@ export default function HomeScanner() {
         brand: data?.data?.brandName,
         barcode: data?.data?.barcode,
         sku: data?.data?.batchDetails?.skuCode,
-        poSku: data?.data?.batchDetails?.metadata?.finishedGoodDetails?.code, // ?
+        poSku: data?.data?.batchDetails?.metadata?.finishedGoodDetails?.code,
+        bundles: data?.data?.batchDetails?.bundles,
       };
 
       setScannedItems((prevItems) => [...prevItems, newItem]);
@@ -301,13 +359,11 @@ export default function HomeScanner() {
         "success"
       );
     } catch (error) {
-      console.log(`Error: ${error}`);
       showSnackbar(error.message || "Failed to scan barcode", "error");
     }
   };
 
   const handleScanButtonPress = () => {
-    console.log("scanner pressed.");
     setShowScanner(true);
   };
 
@@ -364,7 +420,13 @@ export default function HomeScanner() {
         <View style={homeScannerStyles.buttonView}>
           <Button
             mode="contained"
-            onPress={() => navigation.navigate("Home Start")}
+            // onPress={() => navigation.navigate("Home Start")}
+            onPress={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "Home Start" }],
+              })
+            }
             style={homeScannerStyles.cancelButton}
             loading={allocating}
             disabled={allocating}

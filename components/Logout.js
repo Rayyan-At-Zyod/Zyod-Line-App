@@ -31,13 +31,10 @@ const LogoutScreen = () => {
     } catch (error) {
       throw new error(error);
     } finally {
-      console.log("attempted sign out.");
       setLoading(false);
 
       let newtoken = AsyncStorage.getItem("userToken");
       let newdata = AsyncStorage.getItem("userData");
-      console.log("new token: ", newtoken);
-      console.log("new data: ", newdata);
     }
   };
 

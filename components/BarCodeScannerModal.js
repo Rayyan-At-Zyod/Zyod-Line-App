@@ -19,12 +19,10 @@ export default function BarCodeScannerModal({
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("BarCodeScannerModal mounted, visible:", visible);
     (async () => {
       try {
         const { Camera } = require("expo-camera");
         const { status } = await Camera.requestCameraPermissionsAsync();
-        console.log("Camera permission status:", status);
         setHasPermission(status === "granted");
       } catch (err) {
         console.error("Error requesting camera permission:", err);
@@ -91,8 +89,6 @@ export default function BarCodeScannerModal({
       </Modal>
     );
   }
-
-  console.log("Rendering camera with visible:", visible);
 
   return (
     <Modal
