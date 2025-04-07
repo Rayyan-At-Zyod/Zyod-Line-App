@@ -108,8 +108,10 @@ export default function HomeScanner() {
 
   const renderGroupHeader = (brand, poSku) => (
     <View style={homeScannerStyles.groupHeader}>
-      <Text style={homeScannerStyles.groupHeaderText}>{poSku}</Text>
-      <Text style={homeScannerStyles.groupHeaderSubText}>{brand}</Text>
+      <View style={homeScannerStyles.groupHeaderLeft}>
+        <Text style={homeScannerStyles.groupHeaderText}>{poSku}</Text>
+      </View>
+        <Text style={homeScannerStyles.groupHeaderSubText}>{brand}</Text>
     </View>
   );
 
