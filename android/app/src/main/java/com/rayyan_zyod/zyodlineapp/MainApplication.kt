@@ -1,4 +1,4 @@
-package com.rayyan_zyod.zyodlineapp
+package com.zyod.factory
 
 import android.app.Application
 import android.content.res.Configuration
