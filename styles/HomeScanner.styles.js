@@ -179,4 +179,31 @@ export const homeScannerStyles = StyleSheet.create({
     color: '#333',
     marginTop: 4,
   },
+  tableHeader: {
+  flexDirection: "row",
+  backgroundColor: "#f5f5f5",
+  paddingVertical: 10,
+  borderBottomWidth: 1,
+  borderColor: "#ddd",
+},
+
+tableRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  paddingVertical: 10,
+  borderBottomWidth: 1,
+  borderColor: "#eee",
+},
+
+headerCell: {
+  fontWeight: "bold",
+  textAlign: "center",
+  paddingHorizontal: 4,
+},
+
+cell: {
+  textAlign: "center",
+  paddingHorizontal: 4,
+},
+
 });

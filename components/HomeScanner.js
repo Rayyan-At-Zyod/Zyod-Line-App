@@ -101,11 +101,11 @@ export default function HomeScanner() {
 
   const renderTableHeader = () => (
     <View style={homeScannerStyles.tableHeader}>
-      <Text style={[homeScannerStyles.headerCell, { flex: 0.5 }]}>S.No.</Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 0.7 }]}>S.No.</Text>
       <Text style={[homeScannerStyles.headerCell, { flex: 1 }]}>Size</Text>
       <Text style={[homeScannerStyles.headerCell, { flex: 1.5 }]}>Serials</Text>
       <Text style={[homeScannerStyles.headerCell, { flex: 1 }]}>Tot. Qty</Text>
-      <Text style={[homeScannerStyles.headerCell, { flex: 0.5 }]}>Action</Text>
+      <Text style={[homeScannerStyles.headerCell, { flex: 0.7 }]}>Action</Text>
     </View>
   );
 
@@ -130,7 +130,7 @@ export default function HomeScanner() {
       <Text style={[homeScannerStyles.cell, { flex: 1 }]}>
         {item?.totalQuantity}
       </Text>
-      <View style={[homeScannerStyles.cell, { flex: 0.5 }]}>
+      <View style={[{ flex: 0.5, alignItems: "center" }]}>
         <IconButton
           icon="delete"
           size={20}
@@ -250,7 +250,7 @@ export default function HomeScanner() {
         throw new Error(errorMessage);
       }
 
-      console.log("response\n", JSON.stringify(data,null,2));
+      console.log("response\n", JSON.stringify(data, null, 2));
 
       // Check if item already exists
       const isDuplicate = scannedItems.some(
