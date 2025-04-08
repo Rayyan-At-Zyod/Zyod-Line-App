@@ -160,7 +160,7 @@ export const homeScannerStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
@@ -175,6 +175,7 @@ export const homeScannerStyles = StyleSheet.create({
   },
   postAllocationValue: {
     fontSize: 16,
+    textAlign: "center",
     fontWeight: "600",
     color: "#333",
     marginTop: 4,
