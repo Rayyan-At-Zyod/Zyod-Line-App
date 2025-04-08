@@ -173,9 +173,16 @@ export default function HomeScanner() {
   const renderPostAllocationHeader = () => (
     <View style={homeScannerStyles.postAllocationHeader}>
       <View style={homeScannerStyles.postAllocationSection}>
-        <Text style={homeScannerStyles.postAllocationLabel}>
-          Bundles scanned
-        </Text>
+        <View>
+          <Text
+            style={[
+              homeScannerStyles.postAllocationLabel,
+              { color: "green", includeFontPadding: false },
+            ]}
+          >
+            Bundles scanneds
+          </Text>
+        </View>
         <Text style={homeScannerStyles.postAllocationValue}>
           {scannedItems?.length}
         </Text>
@@ -240,24 +247,22 @@ export default function HomeScanner() {
         };
       });
 
-      console.log(
-        "Hello rayyan! Hitting allocation API:\n",
-        JSON.stringify(allocationsData, null, 2)
-      );
-
       const total = scannedItems.reduce(
         (sum, item) => sum + item.totalQuantity,
         0
       );
       setTotalExpectedOutput(total);
 
+      const token = await AsyncStorage.getItem("userToken");
+
       const response = await fetch(
+        // "https://stage-api.zyod.com/v1/lines/allocations/",
         "https://dev-api.zyod.com/v1/lines/allocations/",
         {
           method: "POST",
           headers: {
             Accept: "application/json",
-            Authorization: `Bearer <token>`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -293,7 +298,9 @@ export default function HomeScanner() {
   const handleBarcodeSubmit = async (scannedBarcode = null) => {
     try {
       const apiBarcode = (scannedBarcode || barcode).toString();
+      console.log("scanned data");
       const response = await fetch(
+        // `https://stage-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
         `https://dev-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
         {
           method: "GET",
@@ -324,11 +331,20 @@ export default function HomeScanner() {
         return;
       }
 
-      let size;
+      let size = null;
       if (data.data.barcodeType == "BUNDLE") {
         size = data?.data?.batchDetails?.bundles?.find(
           (item) => item?.barcode === data?.data?.barcode
         )?.size;
+        if (size === null) {
+          data?.data?.batchDetails?.bundles?.forEach((bundle) =>
+            bundle?.serials?.forEach((item) => {
+              if (item?.barcode === data?.data?.barcode) {
+                size = item?.size;
+              }
+            })
+          );
+        }
       } else {
         data?.data?.batchDetails?.bundles?.forEach((bundle) =>
           bundle?.serials?.forEach((item) => {
@@ -340,6 +356,7 @@ export default function HomeScanner() {
       }
 
       // Add the scanned item to the list with all necessary data
+      console.log("data.data:", JSON.stringify(data.data, null, 2));
       const newItem = {
         id: data?.data?.barcode,
         size: size,

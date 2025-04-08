@@ -25,7 +25,6 @@ const SignInScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
-
     if (!username || !password) {
       setError("Please fill in all fields");
       return;
@@ -35,18 +34,23 @@ const SignInScreen = () => {
     setError("");
 
     try {
-      const response = await fetch("https://dev-api.zyod.com/v1/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          UserName: username,
-          Password: password,
-          PortalId: 3,
-        }),
-      });
+      const response = await fetch(
+        "https://dev-api.zyod.com/v1/users/login",
+        // "https://stage-api.zyod.com/v1/users/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            UserName: username,
+            Password: password,
+            PortalId: 3,
+          }),
+        }
+      );
       const data = await response.json();
+      // console.log("respiobse on sign in:", data);
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Sign in failed");

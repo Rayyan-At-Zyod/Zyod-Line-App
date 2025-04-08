@@ -20,14 +20,18 @@ export default function HomeStart() {
 
   const fetchLines = async () => {
     try {
-      const response = await fetch("https://dev-api.zyod.com/v1/lines/list/", {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "https://dev-api.zyod.com/v1/lines/list/",
+        // "https://stage-api.zyod.com/v1/lines/list/",
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await response.json();
 
@@ -48,7 +52,7 @@ export default function HomeStart() {
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
-  
+
   const selectLine = (line) => {
     setSelectedLine(`Line ${line.LineId}`);
     closeMenu();
