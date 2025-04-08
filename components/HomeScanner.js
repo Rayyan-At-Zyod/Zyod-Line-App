@@ -64,18 +64,18 @@ export default function HomeScanner() {
       ),
 
       // 2) Right side: e.g. "English" + date
-      // headerRight: () => (
-      //   <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
-      //     <Text style={{ fontSize: 12 }}>English</Text>
-      //     <Text style={{ fontSize: 12 }}>
-      //       {new Date().toLocaleDateString("en-GB", {
-      //         day: "2-digit",
-      //         month: "short",
-      //         year: "numeric",
-      //       })}
-      //     </Text>
-      //   </View>
-      // ),
+      headerRight: () => (
+        <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
+          <Text style={{ fontSize: 12 }}></Text>
+          <Text style={{ fontSize: 12 }}>
+            {new Date().toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
+          </Text>
+        </View>
+      ),
 
       // (Optional) Align the custom title in the center or left
       headerTitleAlign: "center",
