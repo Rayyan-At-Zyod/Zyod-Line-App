@@ -298,7 +298,7 @@ export default function HomeScanner() {
   const handleBarcodeSubmit = async (scannedBarcode = null) => {
     try {
       const apiBarcode = (scannedBarcode || barcode).toString();
-      console.log("scanned data");
+      const token = await AsyncStorage.getItem("userToken");
       const response = await fetch(
         // `https://stage-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
         `https://dev-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
@@ -306,7 +306,7 @@ export default function HomeScanner() {
           method: "GET",
           headers: {
             Accept: "application/json",
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -355,8 +355,9 @@ export default function HomeScanner() {
         );
       }
 
+      // console.log("data.data:", JSON.stringify(data.data, null, 2));
+
       // Add the scanned item to the list with all necessary data
-      console.log("data.data:", JSON.stringify(data.data, null, 2));
       const newItem = {
         id: data?.data?.barcode,
         size: size,

@@ -33,8 +33,10 @@ export default function BarCodeScannerModal({
 
   const handleBarCodeScanned = ({ type, data }) => {
     console.log("Barcode scanned:", { type, data });
+    const barcode = type === "qr" ? data?.split(",")[2]?.trim() : data;
+    // console.log("val", barcode);
     setScanned(true);
-    onBarCodeScanned(data);
+    onBarCodeScanned(barcode);
     onClose();
     setScanned(false);
   };
