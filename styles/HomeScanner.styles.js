@@ -22,7 +22,8 @@ export const homeScannerStyles = StyleSheet.create({
   },
   scanCameraBox: {
     backgroundColor: "white",
-    padding: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#e0e0e0",
@@ -33,6 +34,7 @@ export const homeScannerStyles = StyleSheet.create({
     transform: "translateY(-5px)",
   },
   codeText: {
+    color: "black",
     fontSize: 14,
     height: 40,
     backgroundColor: "white",
@@ -120,6 +122,7 @@ export const homeScannerStyles = StyleSheet.create({
     borderRadius: 8,
     height: 48,
     justifyContent: "center",
+    color: "white",
   },
   snackbar: {
     margin: 16,

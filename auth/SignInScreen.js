@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignInScreen = () => {
   const navigation = useNavigation();
@@ -50,7 +51,10 @@ const SignInScreen = () => {
         }
       );
       const data = await response.json();
-      // console.log("respiobse on sign in:", data);
+      await AsyncStorage.setItem(
+        "userFirstName",
+        data.data.user.user_FirstName
+      );
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Sign in failed");

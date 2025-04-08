@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useEffect } from "react";
 import {
   View,
   Text,
@@ -33,7 +33,16 @@ export default function HomeScanner() {
   const [showScanner, setShowScanner] = useState(false);
   const [allocated, setAllocated] = useState(false);
   const [totalExpectedOutput, setTotalExpectedOutput] = useState(0);
-  const username = AsyncStorage.getItem("userData");
+  const [firstName, setFirstName] = useState("");
+
+  useEffect(() => {
+    getFirstName();
+  },[]);
+  
+  const getFirstName = async () => {
+    const name = await AsyncStorage.getItem("userFirstName");
+    setFirstName(name || "");
+  };
 
   // ----- CUSTOM HEADER -----
   useLayoutEffect(() => {
@@ -49,29 +58,29 @@ export default function HomeScanner() {
           </Text>
           {/* The second line: e.g. "Line Incharge: Satish (in session)" */}
           <Text style={{ fontSize: 12, color: "#333" }}>
-            Line Incharge: Satish (in session)
+            Line Incharge: {firstName} (in session)
           </Text>
         </View>
       ),
 
       // 2) Right side: e.g. "English" + date
-      headerRight: () => (
-        <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
-          <Text style={{ fontSize: 12 }}>English</Text>
-          <Text style={{ fontSize: 12 }}>
-            {new Date().toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })}
-          </Text>
-        </View>
-      ),
+      // headerRight: () => (
+      //   <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
+      //     <Text style={{ fontSize: 12 }}>English</Text>
+      //     <Text style={{ fontSize: 12 }}>
+      //       {new Date().toLocaleDateString("en-GB", {
+      //         day: "2-digit",
+      //         month: "short",
+      //         year: "numeric",
+      //       })}
+      //     </Text>
+      //   </View>
+      // ),
 
       // (Optional) Align the custom title in the center or left
       headerTitleAlign: "center",
     });
-  }, [navigation, line, noOfOps]);
+  }, [navigation, line, noOfOps, firstName]);
 
   const showSnackbar = (message, type) => {
     setSnackbarMessage(message);

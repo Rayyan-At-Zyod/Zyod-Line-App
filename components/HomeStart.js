@@ -3,31 +3,40 @@ import { View, Text } from "react-native";
 import { TextInput, Button, Menu, ActivityIndicator } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import homeStartStyles from "../styles/HomeStart.styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "../context/AuthContext";
 
 export default function HomeStart() {
   const navigation = useNavigation();
+  const { token } = useAuth();
   const [noOfOps, setNoOfOps] = useState("");
   const [visible, setVisible] = useState(false);
   const [selectedLine, setSelectedLine] = useState("Select Line");
   const [lines, setLines] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [firstName, setFirstName] = useState("");
   const noOfOpsRef = useRef(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchLines();
+    getFirstName();
   }, []);
+
+  const getFirstName = async () => {
+    const name = await AsyncStorage.getItem("userFirstName");
+    setFirstName(name || "");
+  };
 
   const fetchLines = async () => {
     try {
       const response = await fetch(
         "https://dev-api.zyod.com/v1/lines/list/",
-        // "https://stage-api.zyod.com/v1/lines/list/",
         {
           method: "GET",
           headers: {
             Accept: "application/json",
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOjQxODcsInBvcnRhbCI6Ilp5b2QiLCJjcmVhdGVkQXQiOiIyMDI1LTA0LTAxVDEyOjI1OjI2Ljg4NloifSwiaWF0IjoxNzQzNTEwMzI2LCJleHAiOjE3NDQxMTUxMjZ9.mQnAwdNzuRhGWF3Hio3zceZNX_R1fNDQ7FwG2cFSRg0`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -42,6 +51,7 @@ export default function HomeStart() {
       // Sort lines by LineId in ascending order
       const sortedLines = data.data.rows.sort((a, b) => a.LineId - b.LineId);
       setLines(sortedLines);
+      console.log(">>lines\n", sortedLines);
     } catch (err) {
       setError(err.message);
       console.error("Error fetching lines:", err);
@@ -61,13 +71,12 @@ export default function HomeStart() {
     }, 100); // Slight delay to ensure UI is ready
   };
 
-  // ----- CUSTOM HEADER (no changes here) -----
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
         <View style={{ flexDirection: "column" }}>
           <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-            Line Incharge: Satish (in session)
+            Line Incharge: {firstName} (in session)
           </Text>
           <Text style={{ fontSize: 12, color: "#333" }}>
             {new Date().toLocaleDateString("en-GB", {
@@ -78,15 +87,9 @@ export default function HomeStart() {
           </Text>
         </View>
       ),
-      headerRight: () => (
-        <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
-          <Text style={{ fontSize: 12 }}>English</Text>
-          <Text></Text>
-        </View>
-      ),
       headerTitleAlign: "center",
     });
-  }, [navigation, noOfOps]);
+  }, [navigation, firstName]);
 
   return (
     <View style={homeStartStyles.container}>
@@ -109,6 +112,7 @@ export default function HomeStart() {
                 {selectedLine}
               </Button>
             }
+            style={{ marginTop: 50 }}
           >
             {loading ? (
               <View style={homeStartStyles.loadingContainer}>
@@ -122,6 +126,7 @@ export default function HomeStart() {
                   key={line.LineId}
                   onPress={() => selectLine(line)}
                   title={`Line ${line.LineId}`}
+                  style={{ minHeight: 40 }}
                 />
               ))
             )}
