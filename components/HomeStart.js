@@ -155,6 +155,12 @@ export default function HomeStart() {
                   ?.LineId,
               });
             }}
+            theme={{
+              dark: false
+            }}
+            activeOutlineColor="black"
+            outlineColor="black"
+            textColor="black"
           />
         </View>
 

@@ -37,8 +37,8 @@ export default function HomeScanner() {
 
   useEffect(() => {
     getFirstName();
-  },[]);
-  
+  }, []);
+
   const getFirstName = async () => {
     const name = await AsyncStorage.getItem("userFirstName");
     setFirstName(name || "");
@@ -367,6 +367,8 @@ export default function HomeScanner() {
       // console.log("data.data:", JSON.stringify(data.data, null, 2));
 
       // Add the scanned item to the list with all necessary data
+
+      // console.log("data\n", JSON.stringify(data.data, null, 2));
       const newItem = {
         id: data?.data?.barcode,
         size: size,
@@ -378,8 +380,9 @@ export default function HomeScanner() {
         poSku: data?.data?.batchDetails?.metadata?.finishedGoodDetails?.code,
         bundles: data?.data?.batchDetails?.bundles,
       };
+      // console.log(">>newItem:", JSON.stringify(newItem, null, 2));
 
-      setScannedItems((prevItems) => [...prevItems, newItem]);
+      setScannedItems((prevItems) => [newItem, ...prevItems]);
       setBarcode(""); // Clear the input after successful scan
       showSnackbar(
         `${data.data.batchDetails.skuCode} scanned successfully`,
@@ -414,6 +417,12 @@ export default function HomeScanner() {
                 value={barcode}
                 onChangeText={setBarcode}
                 onSubmitEditing={() => handleBarcodeSubmit()}
+                theme={{
+                  dark: false
+                }}
+                activeOutlineColor="black"
+                outlineColor="black"
+                textColor="black"
               />
             </View>
             <TouchableOpacity

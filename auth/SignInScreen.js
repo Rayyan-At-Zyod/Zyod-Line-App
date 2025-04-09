@@ -53,17 +53,17 @@ const SignInScreen = () => {
       const data = await response.json();
       await AsyncStorage.setItem(
         "userFirstName",
-        data.data.user.user_FirstName
+        data?.data?.user?.user_FirstName
       );
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Sign in failed");
       }
 
-      if (!data.data?.token || !data.data?.user) {
+      if (!data?.data?.token || !data?.data?.user) {
         throw new Error("Invalid response format");
       }
-      await signIn(data.data.token, data.data.user);
+      await signIn(data?.data?.token, data?.data?.user);
     } catch (err) {
       console.error("Detailed error:", err);
       if (err.message === "Network request failed") {
