@@ -36,8 +36,9 @@ const SignInScreen = () => {
 
     try {
       const response = await fetch(
+        "https://api.zyod.com/v1/users/login",
+        // "https://stage-api.zyod.com/v1/users/login",
         // "https://dev-api.zyod.com/v1/users/login",
-        "https://stage-api.zyod.com/v1/users/login",
         {
           method: "POST",
           headers: {

@@ -31,7 +31,8 @@ export default function HomeStart() {
   const fetchLines = async () => {
     try {
       const response = await fetch(
-        "https://stage-api.zyod.com/v1/lines/list/",
+        "https://api.zyod.com/v1/lines/list/",
+        // "https://stage-api.zyod.com/v1/lines/list/",
         // "https://dev-api.zyod.com/v1/lines/list/",
         {
           method: "GET",
