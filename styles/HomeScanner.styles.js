@@ -12,17 +12,24 @@ export const homeScannerStyles = StyleSheet.create({
     borderBottomColor: "#e0e0e0",
     // backgroundColor: "yellow",
   },
-  scanRow: {
+  scanInputBox: {
     backgroundColor: "#f5f5f5",
-    flexDirection: "row",
+    flexDirection: "column",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: 15,
-    height: 84,
+    // gap: 15,
+    // height: 84,
     marginHorizontal: 16,
     paddingHorizontal: 16,
     borderRadius: 20,
     borderWidth: 0.2,
-    borderColor: "#000"
+    borderColor: "#000",
+  },
+  scanRow: {
+    marginVertical: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
   },
   scanCameraBox: {
     backgroundColor: "white",
@@ -36,9 +43,15 @@ export const homeScannerStyles = StyleSheet.create({
   scanBox: {
     flex: 1,
     height: 48,
-    paddingLeft: 12,
-    paddingRight: 4,
+    marginLeft: 12,
+    marginRight: 4,
     transform: "translateY(-7px)",
+  },
+  scanText: {
+    fontSize: 12,
+    color: "#000",
+    textAlign: "center",
+    marginBottom: 4,
   },
   codeText: {
     color: "black",

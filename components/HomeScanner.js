@@ -353,6 +353,14 @@ export default function HomeScanner() {
         return;
       }
 
+      if (!data?.data?.brandName) {
+        showSnackbar(
+          `No brand name provided in ${data?.data?.batchDetails?.skuCode}`,
+          "error"
+        );
+        return;
+      }
+
       let size = null;
       if (data.data.barcodeType == "BUNDLE") {
         size = data?.data?.batchDetails?.bundles?.find(
@@ -420,32 +428,36 @@ export default function HomeScanner() {
       {!allocated && (
         <View style={homeScannerStyles.scanInputContainer}>
           {/* <List.Subheader>Enter bundle code</List.Subheader> */}
-          <View style={homeScannerStyles.scanRow}>
-            <View style={homeScannerStyles.scanBox}>
-              <TextInput
-                style={homeScannerStyles.codeText}
-                label="Enter bundle code or scan"
-                mode="outlined"
-                keyboardType="number-pad"
-                value={barcode}
-                onChangeText={setBarcode}
-                onSubmitEditing={() => handleBarcodeSubmit()}
-                theme={{
-                  dark: false,
-                }}
-                activeOutlineColor="black"
-                outlineColor="black"
-                textColor="black"
-              />
+          <View style={homeScannerStyles.scanInputBox}>
+            <View style={homeScannerStyles.scanRow}>
+              <View style={homeScannerStyles.scanBox}>
+                <TextInput
+                  style={homeScannerStyles.codeText}
+                  label="Enter bundle code or scan"
+                  mode="outlined"
+                  keyboardType="number-pad"
+                  value={barcode}
+                  onChangeText={setBarcode}
+                  onSubmitEditing={() => handleBarcodeSubmit()}
+                  theme={{
+                    dark: false,
+                  }}
+                  activeOutlineColor="black"
+                  outlineColor="black"
+                  textColor="black"
+                />
+              </View>
+              <TouchableOpacity
+                style={homeScannerStyles.scanCameraBox}
+                onPress={handleScanButtonPress}
+              >
+                <Ionicons name="camera-outline" size={36} color="#000" />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={homeScannerStyles.scanCameraBox}
-              onPress={handleScanButtonPress}
-            >
-              <Ionicons name="camera-outline" size={36} color="#000" />
-            </TouchableOpacity>
+            <Text style={homeScannerStyles.scanText}>
+              Scan any bundle barcode or type the code (Ex: BND001)
+            </Text>
           </View>
-          <Text>Scan any bundle barcode or type the code (Ex: BND001)</Text>
         </View>
       )}
 
