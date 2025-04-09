@@ -113,7 +113,7 @@ export default function HomeStart() {
                 {selectedLine}
               </Button>
             }
-            style={{ marginTop: 50 }}
+            style={homeStartStyles.menuContainer}
           >
             {loading ? (
               <View style={homeStartStyles.loadingContainer}>

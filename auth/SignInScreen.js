@@ -51,10 +51,8 @@ const SignInScreen = () => {
         }
       );
       const data = await response.json();
-      await AsyncStorage.setItem(
-        "userFirstName",
-        data?.data?.user?.user_FirstName
-      );
+      const userFirstName = data?.data?.user?.user_FirstName || "";
+      await AsyncStorage.setItem("userFirstName", userFirstName);
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Sign in failed");

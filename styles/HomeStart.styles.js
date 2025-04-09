@@ -20,7 +20,9 @@ export default homeStartStyles = StyleSheet.create({
     // Elevation for Android
     elevation: 2,
   },
+  menuContainer: { marginTop: 45, width: 315, backgroundColor: "#fff" },
   inputGroup: {
+    width: 315,
     marginBottom: 20,
   },
   label: {
@@ -36,6 +38,7 @@ export default homeStartStyles = StyleSheet.create({
     // borderRadius: 8,
   },
   dropdownButton: {
+    width: 315,
     borderRadius: 8,
     borderColor: "#ccc", // Outline color
     backgroundColor: "#fff",
