@@ -42,10 +42,10 @@ export const homeScannerStyles = StyleSheet.create({
   },
   scanBox: {
     flex: 1,
-    height: 48,
+    height: 42,
     marginLeft: 12,
     marginRight: 4,
-    transform: "translateY(-7px)",
+    transform: "translateY(-10px)",
   },
   scanText: {
     fontSize: 12,

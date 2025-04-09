@@ -433,7 +433,7 @@ export default function HomeScanner() {
               <View style={homeScannerStyles.scanBox}>
                 <TextInput
                   style={homeScannerStyles.codeText}
-                  label="Enter bundle code or scan"
+                  label="Enter bundle code"
                   mode="outlined"
                   keyboardType="number-pad"
                   value={barcode}
@@ -455,7 +455,7 @@ export default function HomeScanner() {
               </TouchableOpacity>
             </View>
             <Text style={homeScannerStyles.scanText}>
-              Scan any bundle barcode or type the code (Ex: BND001)
+              Scan any bundle barcode or type the code (Ex: 001)
             </Text>
           </View>
         </View>
