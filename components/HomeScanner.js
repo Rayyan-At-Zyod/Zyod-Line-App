@@ -322,6 +322,7 @@ export default function HomeScanner() {
       );
 
       const data = await response.json();
+
       if (!response.ok) {
         const errorMessage = data.message || "Failed to add raw material";
         throw new Error(errorMessage);
@@ -335,6 +336,18 @@ export default function HomeScanner() {
       if (isDuplicate) {
         showSnackbar(
           `${data?.data?.batchDetails?.skuCode} is already scanned`,
+          "error"
+        );
+        return;
+      }
+
+      if (data.data?.barcodeType && data.data.barcodeType !== "BUNDLE") {
+        showSnackbar(
+          `Please make sure that you have scanned a bundle and not ${
+            data?.data?.barcodeType
+              ? `a ${data?.data?.barcodeType}`
+              : "something else"
+          }`,
           "error"
         );
         return;
@@ -411,14 +424,14 @@ export default function HomeScanner() {
             <View style={homeScannerStyles.scanBox}>
               <TextInput
                 style={homeScannerStyles.codeText}
-                label="Enter bundle code"
+                label="Enter bundle code or scan"
                 mode="outlined"
                 keyboardType="number-pad"
                 value={barcode}
                 onChangeText={setBarcode}
                 onSubmitEditing={() => handleBarcodeSubmit()}
                 theme={{
-                  dark: false
+                  dark: false,
                 }}
                 activeOutlineColor="black"
                 outlineColor="black"
@@ -429,9 +442,10 @@ export default function HomeScanner() {
               style={homeScannerStyles.scanCameraBox}
               onPress={handleScanButtonPress}
             >
-              <Ionicons name="camera-outline" size={24} color="#000" />
+              <Ionicons name="camera-outline" size={36} color="#000" />
             </TouchableOpacity>
           </View>
+          <Text>Scan any bundle barcode or type the code (Ex: BND001)</Text>
         </View>
       )}
 
