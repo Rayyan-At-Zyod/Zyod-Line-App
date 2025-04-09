@@ -16,6 +16,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import Constants from "expo-constants";
+const { ZYOD_LOGIN_API } = Constants.manifest.extra;
+console.log(ZYOD_LOGIN_API); // Logs the ZYOD_LOGIN_API URL
+
+const loginApi = ZYOD_LOGIN_API;
+
 const SignInScreen = () => {
   const navigation = useNavigation();
   const { signIn } = useAuth();
@@ -36,7 +42,8 @@ const SignInScreen = () => {
 
     try {
       const response = await fetch(
-        "https://api.zyod.com/v1/users/login",
+        loginApi,
+        // "https://api.zyod.com/v1/users/login",
         // "https://stage-api.zyod.com/v1/users/login",
         // "https://dev-api.zyod.com/v1/users/login",
         {

@@ -6,6 +6,10 @@ import homeStartStyles from "../styles/HomeStart.styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../context/AuthContext";
 
+import Constants from "expo-constants";
+const { ZYOD_FETCH_LISTS_API } = Constants.manifest.extra;
+const fetchListsApi = ZYOD_FETCH_LISTS_API;
+
 export default function HomeStart() {
   const navigation = useNavigation();
   const { token } = useAuth();
@@ -31,7 +35,8 @@ export default function HomeStart() {
   const fetchLines = async () => {
     try {
       const response = await fetch(
-        "https://api.zyod.com/v1/lines/list/",
+        fetchListsApi,
+        // "https://api.zyod.com/v1/lines/list/",
         // "https://stage-api.zyod.com/v1/lines/list/",
         // "https://dev-api.zyod.com/v1/lines/list/",
         {
@@ -157,7 +162,7 @@ export default function HomeStart() {
               });
             }}
             theme={{
-              dark: false
+              dark: false,
             }}
             activeOutlineColor="black"
             outlineColor="black"

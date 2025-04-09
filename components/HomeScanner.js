@@ -20,6 +20,12 @@ import { homeScannerStyles } from "../styles/HomeScanner.styles";
 import BarCodeScannerModal from "./BarCodeScannerModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import Constants from "expo-constants";
+const { ZYOD_FETCH_LISTS_API, ZYOD_BARCODE_DETAILS_API } =
+  Constants.manifest.extra;
+const detailsFromBarcodeApi = ZYOD_BARCODE_DETAILS_API;
+const allocateBundlesApi = ZYOD_FETCH_LISTS_API;
+
 export default function HomeScanner() {
   const route = useRoute();
   const navigation = useNavigation();
@@ -265,7 +271,8 @@ export default function HomeScanner() {
       const token = await AsyncStorage.getItem("userToken");
 
       const response = await fetch(
-        "https://api.zyod.com/v1/lines/allocations/",
+        allocateBundlesApi,
+        // "https://api.zyod.com/v1/lines/allocations/",
         // "https://stage-api.zyod.com/v1/lines/allocations/",
         // "https://dev-api.zyod.com/v1/lines/allocations/",
         {
@@ -310,7 +317,8 @@ export default function HomeScanner() {
       const apiBarcode = (scannedBarcode || barcode).toString();
       const token = await AsyncStorage.getItem("userToken");
       const response = await fetch(
-        `https://api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
+        detailsFromBarcodeApi,
+        // `https://api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
         // `https://stage-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
         // `https://dev-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
         {
