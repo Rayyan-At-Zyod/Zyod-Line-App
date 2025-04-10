@@ -58,7 +58,7 @@ export default function HomeStart() {
       console.log("Hi check lines fetchd\n", JSON.stringify(data, null, 2));
 
       // Sort lines by LineId in ascending order
-      const sortedLines = data.data.rows.sort((a, b) => a.LineId - b.LineId);
+      const sortedLines = data.data.rows.sort((a, b) => a.Name - b.Name);
       setLines(sortedLines);
       console.log(">>lines\n", JSON.stringify(sortedLines, null, 2));
     } catch (err) {
@@ -134,7 +134,7 @@ export default function HomeStart() {
                 <Menu.Item
                   key={line.LineId}
                   onPress={() => selectLine(line)}
-                  title={`Line ${line.LineId}`}
+                  title={`${line.Name}`}
                   style={{ minHeight: 40 }}
                 />
               ))
