@@ -29,12 +29,7 @@
     "extra": {
       "eas": {
         "projectId": "8964b765-9bb3-48a6-b52c-fc7bc9891c56"
-      },
-
-      "ZYOD_LOGIN_API": "https://api.zyod.com/v1/users/login",
-      "ZYOD_ALLOCATE_BUNDLES_API": "https://api.zyod.com/v1/lines/allocations/",
-      "ZYOD_BARCODE_DETAILS_API": "https://api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=",
-      "ZYOD_FETCH_LISTS_API": "https://api.zyod.com/v1/lines/list/"
+      }
     },
     "owner": "rayyan_zyod"
   }

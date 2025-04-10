@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "prestart": "node updateAppJson.js",
+    "prebuild": "node updateAppJson.js",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
