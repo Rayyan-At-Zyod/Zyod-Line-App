@@ -17,9 +17,7 @@ import { useAuth } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Constants from "expo-constants";
-const { ZYOD_LOGIN_API } = Constants.manifest.extra;
-console.log(ZYOD_LOGIN_API); // Logs the ZYOD_LOGIN_API URL
-
+const { ZYOD_LOGIN_API } = Constants.expoConfig.extra;
 const loginApi = ZYOD_LOGIN_API;
 
 const SignInScreen = () => {
@@ -54,7 +52,7 @@ const SignInScreen = () => {
           body: JSON.stringify({
             UserName: username,
             Password: password,
-            PortalId: 3,
+            PortalId: 1,
           }),
         }
       );
@@ -107,11 +105,11 @@ const SignInScreen = () => {
               autoComplete="username"
               autoCapitalize="none"
               returnKeyType="next"
-              mode="outine"
+              mode="outline"
             />
 
             <TextInput
-              mode="outine"
+              mode="outline"
               ref={passwordRef}
               style={styles.input}
               placeholder="Password"

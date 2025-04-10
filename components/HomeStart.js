@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../context/AuthContext";
 
 import Constants from "expo-constants";
-const { ZYOD_FETCH_LISTS_API } = Constants.manifest.extra;
+const { ZYOD_FETCH_LISTS_API } = Constants.expoConfig.extra;
 const fetchListsApi = ZYOD_FETCH_LISTS_API;
 
 export default function HomeStart() {

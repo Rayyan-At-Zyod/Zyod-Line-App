@@ -22,7 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Constants from "expo-constants";
 const { ZYOD_FETCH_LISTS_API, ZYOD_BARCODE_DETAILS_API } =
-  Constants.manifest.extra;
+  Constants.expoConfig.extra;
 const detailsFromBarcodeApi = ZYOD_BARCODE_DETAILS_API;
 const allocateBundlesApi = ZYOD_FETCH_LISTS_API;
 
