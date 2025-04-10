@@ -271,9 +271,9 @@ export default function HomeScanner() {
       const token = await AsyncStorage.getItem("userToken");
 
       const response = await fetch(
-        // allocateBundlesApi,
+        allocateBundlesApi,
         // "https://api.zyod.com/v1/lines/allocations/",
-        "https://stage-api.zyod.com/v1/lines/allocations/",
+        // "https://stage-api.zyod.com/v1/lines/allocations/",
         // "https://dev-api.zyod.com/v1/lines/allocations/",
         {
           method: "POST",
@@ -317,9 +317,9 @@ export default function HomeScanner() {
       const apiBarcode = (scannedBarcode || barcode).toString();
       const token = await AsyncStorage.getItem("userToken");
       const response = await fetch(
-        // detailsFromBarcodeApi,
+        detailsFromBarcodeApi,
         // `https://api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
-        `https://stage-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
+        // `https://stage-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
         // `https://dev-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
         {
           method: "GET",
