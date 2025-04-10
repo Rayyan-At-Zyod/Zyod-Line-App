@@ -47,7 +47,7 @@ const SignInScreen = () => {
           body: JSON.stringify({
             UserName: username,
             Password: password,
-            PortalId: 3,
+            PortalId: 1,
           }),
         }
       );
