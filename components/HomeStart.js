@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState, useEffect, useRef } from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { TextInput, Button, Menu, ActivityIndicator } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import homeStartStyles from "../styles/HomeStart.styles";
@@ -123,7 +123,7 @@ export default function HomeStart() {
                 {selectedLineName}
               </Button>
             }
-            style={homeStartStyles.menuContainer}
+            style={[homeStartStyles.menuContainer, { maxHeight: 300 }]}
           >
             {loading ? (
               <View style={homeStartStyles.loadingContainer}>
@@ -132,14 +132,16 @@ export default function HomeStart() {
             ) : error ? (
               <Text style={homeStartStyles.errorText}>{error}</Text>
             ) : (
-              lines.map((line) => (
-                <Menu.Item
-                  key={line.LineId}
-                  onPress={() => selectLine(line)}
-                  title={`${line.Name}`}
-                  style={{ minHeight: 40 }}
-                />
-              ))
+              <ScrollView style={{ maxHeight: 280 }}>
+                {lines.map((line) => (
+                  <Menu.Item
+                    key={line.LineId}
+                    onPress={() => selectLine(line)}
+                    title={`${line.Name}`}
+                    style={{ minHeight: 40 }}
+                  />
+                ))}
+              </ScrollView>
             )}
           </Menu>
         </View>
