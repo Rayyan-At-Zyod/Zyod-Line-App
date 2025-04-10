@@ -318,9 +318,6 @@ export default function HomeScanner() {
       const token = await AsyncStorage.getItem("userToken");
       const response = await fetch(
         `${detailsFromBarcodeApi}${apiBarcode}`,
-        // `https://api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
-        // `https://stage-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
-        // `https://dev-api.zyod.com/v1/barcodes/batchDetailsFromBarcode?barcode=${apiBarcode}`,
         {
           method: "GET",
           headers: {
@@ -332,6 +329,7 @@ export default function HomeScanner() {
       );
 
       const data = await response.json();
+
 
       if (!response.ok) {
         const errorMessage = data.message || "Failed to add raw material";
@@ -362,6 +360,8 @@ export default function HomeScanner() {
         );
         return;
       }
+
+      console.log("data\n", JSON.stringify(data?.data, null, 2));
 
       if (!data?.data?.brandName) {
         showSnackbar(
@@ -395,11 +395,8 @@ export default function HomeScanner() {
         );
       }
 
-      // console.log("data.data:", JSON.stringify(data.data, null, 2));
-
       // Add the scanned item to the list with all necessary data
 
-      // console.log("data\n", JSON.stringify(data.data, null, 2));
       const newItem = {
         id: data?.data?.barcode,
         size: size,
