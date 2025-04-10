@@ -36,9 +36,9 @@ export default function HomeStart() {
   const fetchLines = async () => {
     try {
       const response = await fetch(
-        fetchListsApi,
+        // fetchListsApi,
         // "https://api.zyod.com/v1/lines/list/",
-        // "https://stage-api.zyod.com/v1/lines/list/",
+        "https://stage-api.zyod.com/v1/lines/list/",
         // "https://dev-api.zyod.com/v1/lines/list/",
         {
           method: "GET",
@@ -160,6 +160,7 @@ export default function HomeStart() {
               }
               navigation.navigate("Home Scanner", {
                 line: selectedLine,
+                lineName: selectedLineName,
                 noOfOps,
                 lineId: lines.find((l) => `Line ${l.LineId}` === selectedLine)
                   ?.LineId,
