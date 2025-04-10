@@ -16,6 +16,7 @@ export default function HomeStart() {
   const [noOfOps, setNoOfOps] = useState("");
   const [visible, setVisible] = useState(false);
   const [selectedLine, setSelectedLine] = useState("Select Line");
+  const [selectedLineName, setSelectedLineName] = useState("Select Line");
   const [lines, setLines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState("");
@@ -74,6 +75,7 @@ export default function HomeStart() {
 
   const selectLine = (line) => {
     setSelectedLine(`Line ${line.LineId}`);
+    setSelectedLineName(`${line.Name}`);
     closeMenu();
     setTimeout(() => {
       noOfOpsRef.current?.focus();
@@ -118,7 +120,7 @@ export default function HomeStart() {
                 labelStyle={homeStartStyles.dropdownButtonLabel}
                 contentStyle={homeStartStyles.dropdownButtonContent}
               >
-                {selectedLine}
+                {selectedLineName}
               </Button>
             }
             style={homeStartStyles.menuContainer}
@@ -177,6 +179,7 @@ export default function HomeStart() {
           onPress={() =>
             navigation.navigate("Home Scanner", {
               line: selectedLine,
+              lineName: selectedLineName,
               noOfOps,
               lineId: lines.find((l) => `Line ${l.LineId}` === selectedLine)
                 ?.LineId,

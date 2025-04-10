@@ -29,7 +29,7 @@ const allocateBundlesApi = ZYOD_FETCH_LISTS_API;
 export default function HomeScanner() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { line, noOfOps, lineId } = route.params || {};
+  const { line, lineName, noOfOps, lineId } = route.params || {};
   const [barcode, setBarcode] = useState("");
   const [scannedItems, setScannedItems] = useState([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -58,8 +58,8 @@ export default function HomeScanner() {
         <View style={{ flexDirection: "column" }}>
           {/* The top line: e.g. "Line - 01 | Operators: 5" */}
           <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-            {line && noOfOps
-              ? `Line - ${line.replace(/\D+/g, "")} | Operators: ${noOfOps}`
+            {line && lineName && noOfOps
+              ? `${lineName.replace(" ", "")} | Operators: ${noOfOps}`
               : "No Line Selected | Operators: -"}
           </Text>
           {/* The second line: e.g. "Line Incharge: Satish (in session)" */}
