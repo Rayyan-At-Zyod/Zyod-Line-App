@@ -55,10 +55,12 @@ export default function HomeStart() {
         throw new Error(data.message || "Failed to fetch lines");
       }
 
+      console.log("Hi check lines fetchd\n", JSON.stringify(data, null, 2));
+
       // Sort lines by LineId in ascending order
       const sortedLines = data.data.rows.sort((a, b) => a.LineId - b.LineId);
       setLines(sortedLines);
-      console.log(">>lines\n", sortedLines);
+      console.log(">>lines\n", JSON.stringify(sortedLines, null, 2));
     } catch (err) {
       setError(err.message);
       console.error("Error fetching lines:", err);
