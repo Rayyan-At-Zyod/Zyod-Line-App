@@ -12,16 +12,15 @@ import {
   Keyboard,
 } from "react-native";
 import { SafeAreaView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { useAuth } from "../context/AuthContext";
 
 import Constants from "expo-constants";
 const { ZYOD_LOGIN_API } = Constants.expoConfig.extra;
 const loginApi = ZYOD_LOGIN_API;
 
 const SignInScreen = () => {
-  const navigation = useNavigation();
   const { signIn } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

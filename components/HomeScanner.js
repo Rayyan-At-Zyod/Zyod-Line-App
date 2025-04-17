@@ -272,9 +272,6 @@ export default function HomeScanner() {
 
       const response = await fetch(
         allocateBundlesApi,
-        // "https://api.zyod.com/v1/lines/allocations/",
-        // "https://stage-api.zyod.com/v1/lines/allocations/",
-        // "https://dev-api.zyod.com/v1/lines/allocations/",
         {
           method: "POST",
           headers: {
@@ -330,7 +327,6 @@ export default function HomeScanner() {
 
       const data = await response.json();
 
-
       if (!response.ok) {
         const errorMessage = data.message || "Failed to add raw material";
         throw new Error(errorMessage);
@@ -363,13 +359,13 @@ export default function HomeScanner() {
 
       console.log("data\n", JSON.stringify(data?.data, null, 2));
 
-      if (!data?.data?.brandName) {
-        showSnackbar(
-          `No brand name provided in ${data?.data?.batchDetails?.skuCode}`,
-          "error"
-        );
-        return;
-      }
+      // if (!data?.data?.brandName) {
+      //   showSnackbar(
+      //     `No brand name provided in ${data?.data?.batchDetails?.skuCode}`,
+      //     "error"
+      //   );
+      //   return;
+      // }
 
       let size = null;
       if (data.data.barcodeType == "BUNDLE") {
